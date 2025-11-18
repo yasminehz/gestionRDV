@@ -28,8 +28,15 @@ class RegistrationController extends AbstractController
             // encode the plain password
             $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
 
-            $entityManager->persist($user);
-            $entityManager->flush();
+            try {
+                $em->persist($user);
+                $em->flush();
+            } catch (UniqueConstraintViolationException $e) {
+                $form->addError(new FormError('Cet email est déjà utilisé.'));
+                return $this->render('registration/register.html.twig', [
+                    'registrationForm' => $form,
+                ]);
+            }
 
             // do anything else you need here, like send an email
 
