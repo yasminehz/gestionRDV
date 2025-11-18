@@ -16,3 +16,12 @@ final class AccueilController extends AbstractController
             'controller_name' => 'AccueilController',
         ]);
     }
+
+    #[Route('/', name:'homepage')]
+    public function homepage(): Response
+    {
+        return $this->render('accueil/index.html.twig',[
+            'controller_name' => 'AccueilController',
+    ]);
+    }
+}
