@@ -1,3 +1,267 @@
-body {
-    background-color: skyblue;
-}
+/* public/css/app.css
+   Styles généraux pour une app Symfony simple et élégante
+   - Utilise variables CSS pour personnaliser couleurs/typo
+   - Responsive basique
+*/
+
+/* =========== Variables =========== */
+:root{
+    --bg: #f7f8fb;
+    --card-bg: #ffffff;
+    --primary: #2563eb;      /* bleu principal */
+    --primary-600: #1e4fd1;
+    --accent: #06b6d4;       /* cyan */
+    --muted: #6b7280;        /* gris */
+    --success: #16a34a;
+    --danger: #dc2626;
+    --radius: 10px;
+    --shadow: 0 6px 18px rgba(15,23,42,0.06);
+    --max-width: 1100px;
+    --gap: 1.25rem;
+    --font-sans: "Inter", "Helvetica Neue", Arial, sans-serif;
+  }
+  
+  /* =========== Reset léger =========== */
+  * { box-sizing: border-box; }
+  html,body { height:100%; }
+  body{
+    margin:0;
+    font-family: var(--font-sans);
+    background: var(--bg);
+    color: #111827;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    line-height:1.45;
+    padding-bottom: 4rem; /* laisser de la place pour footer */
+  }
+  
+  /* =========== Container =========== */
+  .container{
+    width: calc(100% - 2rem);
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 1rem 0;
+  }
+  
+  /* =========== Header =========== */
+  .header{
+    background: linear-gradient(90deg, rgba(255,255,255,0.6), rgba(255,255,255,0.4));
+    backdrop-filter: blur(6px);
+    box-shadow: var(--shadow);
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+  .header-inner{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap: var(--gap);
+    padding: 0.8rem 1rem;
+  }
+  .brand{
+    display:flex;
+    align-items:center;
+    gap: 0.75rem;
+    text-decoration:none;
+    color: inherit;
+  }
+  .brand .logo{
+    width:40px;
+    height:40px;
+    border-radius:8px;
+    background: var(--primary);
+    display:inline-grid;
+    place-items:center;
+    color:white;
+    font-weight:700;
+    box-shadow: 0 4px 10px rgba(37,99,235,0.25);
+  }
+  .nav{
+    display:flex;
+    gap: 0.5rem;
+    align-items:center;
+  }
+  .nav a{
+    text-decoration:none;
+    color:var(--muted);
+    padding: 0.45rem 0.6rem;
+    border-radius:8px;
+    font-weight:500;
+  }
+  .nav a:hover{ color:var(--primary-600); background: rgba(37,99,235,0.06); }
+  
+  /* =========== Hero / Page header =========== */
+  .page-header{
+    background: transparent;
+    padding: 1.6rem 0;
+    margin-bottom: 1rem;
+  }
+  .page-title{
+    margin:0;
+    font-size: clamp(1.4rem, 2.1vw, 2rem);
+    font-weight:700;
+    color: #0f172a;
+  }
+  .page-subtitle{
+    margin-top:0.35rem;
+    color: var(--muted);
+    font-size:0.95rem;
+  }
+  
+  /* =========== Card =========== */
+  .card{
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 1.1rem;
+  }
+  
+  /* =========== Grid layout util =========== */
+  .row{
+    display:grid;
+    grid-template-columns: 1fr;
+    gap: var(--gap);
+  }
+  @media(min-width:900px){
+    .row.cols-2{ grid-template-columns: 1fr 360px; }
+    .row.cols-3{ grid-template-columns: repeat(3, 1fr); }
+  }
+  
+  /* =========== Buttons =========== */
+  .btn{
+    display:inline-block;
+    padding: 0.55rem 0.95rem;
+    border-radius: 8px;
+    text-decoration:none;
+    cursor:pointer;
+    border: none;
+    font-weight:600;
+    font-size:0.95rem;
+    transition: transform .12s ease, box-shadow .12s ease;
+    background: var(--primary);
+    color: white;
+    box-shadow: 0 6px 14px rgba(2,6,23,0.08);
+  }
+  .btn:hover{ transform: translateY(-2px); box-shadow: 0 10px 22px rgba(2,6,23,0.12); }
+  .btn.secondary{
+    background: transparent;
+    color: var(--primary-600);
+    border: 1px solid rgba(37,99,235,0.12);
+  }
+  .btn.danger{ background: var(--danger); }
+  
+  /* =========== Forms =========== */
+  .form-row{ margin-bottom: 0.75rem; }
+  label{
+    display:block;
+    margin-bottom:0.35rem;
+    font-weight:600;
+    font-size:0.92rem;
+    color:#0f172a;
+  }
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  textarea,
+  select{
+    width:100%;
+    padding: 0.6rem 0.75rem;
+    border-radius:8px;
+    border:1px solid #e6e9ee;
+    background: white;
+    font-size:0.95rem;
+    outline: none;
+    transition: box-shadow .12s ease, border-color .12s ease;
+  }
+  input:focus, textarea:focus, select:focus{
+    border-color: rgba(37,99,235,0.6);
+    box-shadow: 0 6px 18px rgba(37,99,235,0.08);
+  }
+  .help{
+    font-size:0.85rem;
+    color:var(--muted);
+    margin-top:0.35rem;
+  }
+  
+  /* Errors & success */
+  .alert{
+    padding: 0.6rem 0.75rem;
+    border-radius: 8px;
+    font-weight:600;
+  }
+  .alert.error{
+    background: rgba(220,38,38,0.08);
+    color: var(--danger);
+    border: 1px solid rgba(220,38,38,0.14);
+  }
+  .alert.success{
+    background: rgba(22,163,74,0.06);
+    color: var(--success);
+    border: 1px solid rgba(22,163,74,0.12);
+  }
+  
+  /* Field errors (Symfony form errors often rendered in .form-errors) */
+  .form-errors{
+    margin-top:0.35rem;
+    color: var(--danger);
+    font-size:0.875rem;
+  }
+  
+  /* =========== Table simple =========== */
+  .table{
+    width:100%;
+    border-collapse:collapse;
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    overflow:hidden;
+    box-shadow: var(--shadow);
+  }
+  .table th, .table td{
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid #f1f5f9;
+    font-size:0.95rem;
+  }
+  .table thead th{
+    background: rgba(15,23,42,0.03);
+    font-weight:700;
+  }
+  
+  /* =========== Footer =========== */
+  .footer{
+    position: fixed;
+    left:0;
+    right:0;
+    bottom:0;
+    background: #ffffff;
+    border-top: 1px solid #eef2f7;
+    padding:0.6rem 1rem;
+    display:flex;
+    justify-content:center;
+    gap: 0.5rem;
+    font-size:0.9rem;
+    color: var(--muted);
+    box-shadow: 0 -6px 18px rgba(2,6,23,0.02);
+  }
+  
+  /* =========== Utilities =========== */
+  .text-center{ text-align:center; }
+  .mb-1{ margin-bottom: 0.6rem; }
+  .mt-1{ margin-top: 0.6rem; }
+  .small{ font-size:0.85rem; color:var(--muted); }
+  .badge{
+    display:inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 999px;
+    font-size:0.8rem;
+    font-weight:700;
+    background: rgba(15,23,42,0.06);
+  }
+  
+  /* =========== Responsive tweaks =========== */
+  @media(max-width:720px){
+    .header-inner{ padding-left:0.6rem; padding-right:0.6rem; }
+    .nav{ display:none; } /* on suppose un menu burger à implémenter si besoin */
+    .row.cols-2{ grid-template-columns: 1fr; }
+  }
+  
