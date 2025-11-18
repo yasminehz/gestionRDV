@@ -20,6 +20,14 @@ class Demandes
     #[ORM\Column(enumType: Etat::class)]
     private ?Etat $etat = null;
 
+    #[ORM\ManyToOne(inversedBy: 'Demandes')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Patient $patient = null;
+
+    #[ORM\ManyToOne(inversedBy: 'demandes')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Medecin $medecin = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -45,6 +53,30 @@ class Demandes
     public function setEtat(Etat $etat): static
     {
         $this->etat = $etat;
+
+        return $this;
+    }
+
+    public function getPatient(): ?Patient
+    {
+        return $this->patient;
+    }
+
+    public function setPatient(?Patient $patient): static
+    {
+        $this->patient = $patient;
+
+        return $this;
+    }
+
+    public function getMedecin(): ?Medecin
+    {
+        return $this->medecin;
+    }
+
+    public function setMedecin(?Medecin $medecin): static
+    {
+        $this->medecin = $medecin;
 
         return $this;
     }
