@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Assistant{% endblock %}
+
+{% block body %}
+    <h1>Create new Assistant</h1>
+
+    {{ include('assistant/_form.html.twig') }}
+
+    <a href="{{ path('app_assistant_index') }}">back to list</a>
+{% endblock %}

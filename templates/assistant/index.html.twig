@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Assistant index{% endblock %}
+
+{% block body %}
+    <h1>Assistant index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Email</th>
+                <th>Roles</th>
+                <th>Password</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for assistant in assistants %}
+            <tr>
+                <td>{{ assistant.id }}</td>
+                <td>{{ assistant.email }}</td>
+                <td>{{ assistant.roles ? assistant.roles|json_encode : '' }}</td>
+                <td>{{ assistant.password }}</td>
+                <td>
+                    <a href="{{ path('app_assistant_show', {'id': assistant.id}) }}">show</a>
+                    <a href="{{ path('app_assistant_edit', {'id': assistant.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_assistant_new') }}">Create new</a>
+{% endblock %}
