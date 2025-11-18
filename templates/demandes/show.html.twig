@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Demandes{% endblock %}
+
+{% block body %}
+    <h1>Demandes</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ demande.id }}</td>
+            </tr>
+            <tr>
+                <th>Datetime</th>
+                <td>{{ demande.datetime ? demande.datetime|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Etat</th>
+                <td>{{ demande.etat }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_demandes_index') }}">back to list</a>
+
+    <a href="{{ path('app_demandes_edit', {'id': demande.id}) }}">edit</a>
+
+    {{ include('demandes/_delete_form.html.twig') }}
+{% endblock %}
