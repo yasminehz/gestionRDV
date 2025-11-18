@@ -55,27 +55,12 @@ class RegistrationController extends AbstractController
                 default:
                     throw new LogicException('Type d\'utilisateur non supporté.');
             }
-            
-            // 2. Transférer les données communes de l'objet temporaire vers l'entité fille
-            // ATTENTION : Cette partie dépend de si vous avez un DTO ou de la façon dont 
-            // RegistrationFormType est construit. Pour la simplicité, supposons que nous copions 
-            // les champs communs (nom, mail, etc.) manuellement si le formulaire était lié à User.
-            
-            // Si vous utilisez le DTO/FormType comme ci-dessus, cette étape est simplifiée si vous utilisez:
-            // $form = $this->createForm(RegistrationFormType::class); // sans $user
-
-            // Pour que ce code fonctionne avec l'héritage Doctrine (Single Table Inheritance),
-            // il est plus simple de définir les propriétés communes sur l'entité parente User 
-            // et de créer directement l'entité fille.
-            
-            // Étant donné que le formulaire a rempli $user, on va copier ces valeurs.
-            
-            // Copie manuelle des champs de l'objet $user vers $entityToPersist :
+       
             $entityToPersist->setNom($user->getNom()); 
             $entityToPersist->setPrenom($user->getPrenom());
-            $entityToPersist->setEmail($user->getMail()); // Assurez-vous d'utiliser la bonne méthode (getEmail/getMail)
-            $entityToPersist->setNumero($user->getNumero()); 
-            // ... autres setters de User
+            $entityToPersist->setEmail($user->getEmail()); // Assurez-vous d'utiliser la bonne méthode (getEmail/getMail)
+          
+
             
             
             // 3. Encoder le mot de passe

@@ -40,7 +40,7 @@ class RegistrationFormType extends AbstractType
                 ],
             ])
 
-            // 2. CHAMPS COMMONS DE L'ENTITÉ USER
+   
             ->add('nom', TextType::class, [
                 'label' => 'Nom',
                 'constraints' => [
@@ -60,10 +60,10 @@ class RegistrationFormType extends AbstractType
             
             ->add('email', EmailType::class, [
                 'label' => 'Adresse Email',
-                // 'constraints' : ajouter ici si vous avez besoin de contraintes spécifiques sur l'email (unique, etc.)
+               
             ])
             
-            // 3. CHAMP DE MOT DE PASSE EN RÉPÉTITION
+
             ->add('plainPassword', RepeatedType::class, [
                 'type' => PasswordType::class,
                 'mapped' => false,
@@ -83,7 +83,6 @@ class RegistrationFormType extends AbstractType
                 ],
             ])
 
-            // 4. TERMES ET CONDITIONS
             ->add('agreeTerms', CheckboxType::class, [
                 'mapped' => false,
                 'constraints' => [
