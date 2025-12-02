@@ -87,4 +87,7 @@ class Medecin extends User
 
         return $this;
     }
+
+
+    
 }

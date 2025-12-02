@@ -18,7 +18,7 @@
                 {{ form_errors(registrationForm.userType) }}
             </div>
 
-            {# CHAMPS COMMONS DE L'ENTITÉ USER #}
+            
 
             <div class="mb-4">
                 <label class="block text-gray-700 text-sm font-bold mb-2">{{ form_label(registrationForm.nom, 'Nom') }}</label>
@@ -32,7 +32,6 @@
                 {{ form_errors(registrationForm.prenom) }}
             </div>
 
-     
 
             <div class="mb-4">
                 <label class="block text-gray-700 text-sm font-bold mb-2">{{ form_label(registrationForm.email, 'Adresse Email') }}</label>
@@ -46,7 +45,13 @@
                 {{ form_widget(registrationForm.plainPassword.second, {'attr': {'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline', 'placeholder': 'Confirmer le mot de passe'}}) }}
                 {{ form_errors(registrationForm.plainPassword) }}
             </div>
-            
+
+
+
+<div id="sub-wrapper" style="display:none;">
+    {{ form_row(registrationForm.medecin) }}
+</div>
+
             <div class="mb-6">
                 <label class="flex items-center text-sm font-bold text-gray-700">
                     {{ form_widget(registrationForm.agreeTerms, {'attr': {'class': 'mr-2 leading-tight'}}) }}
@@ -63,4 +68,26 @@
             
         {{ form_end(registrationForm) }}
     </div>
+    <script>
+    // Récupération des éléments
+    const typeSelect = document.querySelector('#{{ registrationForm.userType.vars.id }}');
+    const subWrapper = document.querySelector('#sub-wrapper');
+
+    // Fonction qui montre ou cache le second select
+    function toggleSubSelect() {
+        // Ici tu compares la valeur choisie
+        if (typeSelect.value === 'assistant') { // remplacer 'other' par la valeur désirée
+            subWrapper.style.display = 'block';
+        } else {
+            subWrapper.style.display = 'none';
+        }
+    }
+
+    // Événement au changement de select
+    typeSelect.addEventListener('change', toggleSubSelect);
+
+    // Au chargement, pour garder l'état si le formulaire est pré-rempli
+    toggleSubSelect();
+</script>
+
 {% endblock %}

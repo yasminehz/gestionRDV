@@ -20,7 +20,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
     "assistant" => Assistant::class
     ])]
 
-class User implements UserInterface, PasswordAuthenticatedUserInterface
+abstract class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
