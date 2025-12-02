@@ -2,13 +2,21 @@
 <header class="site-header">
   <div class="container">
     <a class="brand" href="{{ path('homepage') }}">
-      <div class="brand-logo" aria-hidden="true">logo</div>
+      <div class="brand-logo">📋</div>
       <div class="brand-title">gestionRDV</div>
     </a>
 
     <nav id="mainNav" class="site-nav" role="navigation">
-      <a href="">Prendre RDV</a>
-        <a href="">Connexion</a>
+      {% if app.user %}
+        {# Utilisateur connecté #}
+        <a href="{{ path('homepage') }}" class="site-nav-link">Accueil</a>
+        <span class="site-nav-user">{{ app.user.prenom }} {{ app.user.nom }}</span>
+        <a href="{{ path('app_logout') }}" class="btn btn-sm btn-danger">Déconnexion</a>
+      {% else %}
+        {# Utilisateur non connecté #}
+        <a href="{{ path('homepage') }}" class="site-nav-link">Accueil</a>
+        <a href="{{ path('app_login') }}" class="btn btn-sm btn-primary">Connexion</a>
+      {% endif %}
     </nav>
   </div>
 </header>
