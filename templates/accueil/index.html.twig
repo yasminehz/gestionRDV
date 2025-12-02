@@ -7,8 +7,22 @@
 <h1>Bienvenue sur la page d'accueil de gestionRDV</h1>
 
 {% if app.user %}
-    <p>Bonjour, {{ app.user.username }} ! Vous êtes connecté.</p>
+    <div class="alert alert-success">
+        <p>Bonjour, <strong>{{ app.user.prenom }} {{ app.user.nom }}</strong> ! Vous êtes connecté.</p>
+        <p>Email : {{ app.user.email }}</p>
+        
+        {# Affichage du rôle #}
+        {% if is_granted('ROLE_MEDECIN') %}
+            <span class="badge badge-info">Médecin</span>
+        {% elseif is_granted('ROLE_PATIENT') %}
+            <span class="badge badge-info">Patient</span>
+        {% elseif is_granted('ROLE_ASSISTANT') %}
+            <span class="badge badge-info">Assistant</span>
+        {% endif %}
+    </div>
 {% else %}
-    <p>Vous n'êtes pas connecté. <a href="">Connectez-vous ici</a>.</p>
+    <div class="alert alert-warning">
+        <p>Vous n'êtes pas connecté. <a href="{{ path('app_login') }}" class="btn btn-primary">Connectez-vous ici</a>.</p>
+    </div>
 {% endif %}
 {% endblock %}

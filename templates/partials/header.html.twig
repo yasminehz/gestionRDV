@@ -7,8 +7,16 @@
     </a>
 
     <nav id="mainNav" class="site-nav" role="navigation">
-      <a href="">Prendre RDV</a>
-        <a href="">Connexion</a>
+      {% if app.user %}
+        {# Utilisateur connecté #}
+        <a href="">Prendre RDV</a>
+        <span>{{ app.user.prenom }} {{ app.user.nom }}</span>
+        <a href="{{ path('app_logout') }}" class="btn btn-sm btn-danger">Déconnexion</a>
+      {% else %}
+        {# Utilisateur non connecté #}
+        <a href="">Prendre RDV</a>
+        <a href="{{ path('app_login') }}" class="btn btn-sm btn-primary">Connexion</a>
+      {% endif %}
     </nav>
   </div>
 </header>
