@@ -15,7 +15,16 @@ class MedecinRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Medecin::class);
     }
+    public function getLesMedecins(): array
+{
+    $qb = $this->createQueryBuilder('m')
+        ->orderBy('m.nom', 'ASC')
+        ->addOrderBy('m.prenom', 'ASC');
 
+    return $qb->getQuery()->getResult(); // renvoie un tableau d’objets Medecin
+}
+
+    }
     //    /**
     //     * @return Medecin[] Returns an array of Medecin objects
     //     */
@@ -40,4 +49,4 @@ class MedecinRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
-}
+

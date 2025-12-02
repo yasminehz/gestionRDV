@@ -7,7 +7,7 @@
 <h1>Bienvenue sur la page d'accueil de gestionRDV</h1>
 
 {% if app.user %}
-    <p>Bonjour, {{ app.user.username }} ! Vous êtes connecté.</p>
+    <p>Bonjour, {{ app.user.prenom }} {{ app.user.nom }} ! Vous êtes connecté.</p>
 {% else %}
     <p>Vous n'êtes pas connecté. <a href="">Connectez-vous ici</a>.</p>
 {% endif %}
