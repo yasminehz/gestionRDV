@@ -11,40 +11,39 @@ use Doctrine\ORM\Mapping as ORM;
 class Patient extends User
 {
     /**
-     * @var Collection<int, Demandes>
+     * @var Collection<int, RendezVous>
      */
-    #[ORM\OneToMany(targetEntity: Demandes::class, mappedBy: 'patient', orphanRemoval: true)]
-    private Collection $Demandes;
+    #[ORM\OneToMany(targetEntity: RendezVous::class, mappedBy: 'patient', orphanRemoval: true)]
+    private Collection $lesRendezVous;
 
     public function __construct()
     {
-        $this->Demandes = new ArrayCollection();
+        $this->lesRendezVous = new ArrayCollection();
     }
 
     /**
-     * @return Collection<int, Demandes>
+     * @return Collection<int, RendezVous>
      */
-    public function getDemandes(): Collection
+    public function getLesRendezVous(): Collection
     {
-        return $this->Demandes;
+        return $this->lesRendezVous;
     }
 
-    public function addDemande(Demandes $demande): static
+    public function addLesRendezVou(RendezVous $rendezVous): static
     {
-        if (!$this->Demandes->contains($demande)) {
-            $this->Demandes->add($demande);
-            $demande->setPatient($this);
+        if (!$this->lesRendezVous->contains($rendezVous)) {
+            $this->lesRendezVous->add($rendezVous);
+            $rendezVous->setPatient($this);
         }
 
         return $this;
     }
 
-    public function removeDemande(Demandes $demande): static
+    public function removeLesRendezVou(RendezVous $rendezVous): static
     {
-        if ($this->Demandes->removeElement($demande)) {
-            // set the owning side to null (unless already changed)
-            if ($demande->getPatient() === $this) {
-                $demande->setPatient(null);
+        if ($this->lesRendezVous->removeElement($rendezVous)) {
+            if ($rendezVous->getPatient() === $this) {
+                $rendezVous->setPatient(null);
             }
         }
 
