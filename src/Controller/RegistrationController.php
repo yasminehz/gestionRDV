@@ -23,7 +23,7 @@ class RegistrationController extends AbstractController
     #[Route('/register', name: 'app_register')]
 public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager, MedecinRepository $repo): Response
 {
-    // On utilise un DTO/simple objet interne au formulaire, pas User
+
     $model = new RegistrationModel();
     $medecins = $repo->getLesMedecins();
     $form = $this->createForm(RegistrationFormType::class, $model, [
@@ -40,7 +40,7 @@ public function register(Request $request, UserPasswordHasherInterface $userPass
         $userType = $form->get('userType')->getData();
         $plainPassword = $form->get('plainPassword')->getData();
 
-        // Ici on instancie la sous-classe réelle
+
         switch ($userType) {
             case 'patient':
                 $entityToPersist = new Patient();
@@ -55,17 +55,17 @@ public function register(Request $request, UserPasswordHasherInterface $userPass
                 throw new LogicException("Type d'utilisateur non supporté.");
         }
 
-        // Hydratation
+
         $entityToPersist->setNom($form->get('nom')->getData());
         $entityToPersist->setPrenom($form->get('prenom')->getData());
         $entityToPersist->setEmail($form->get('email')->getData());
 
-        // Uniquement l’assistant a un médecin
+
         if ($entityToPersist instanceof Assistant) {
             $entityToPersist->setMedecin($form->get('medecin')->getData());
         }
 
-        // Mot de passe
+
         $entityToPersist->setPassword(
             $userPasswordHasher->hashPassword($entityToPersist, $plainPassword)
         );

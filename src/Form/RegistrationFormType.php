@@ -23,7 +23,7 @@ class RegistrationFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            // Choix du rôle
+            
             ->add('userType', ChoiceType::class, [
                 'mapped' => false,
                 'choices'  => [
@@ -40,7 +40,7 @@ class RegistrationFormType extends AbstractType
                 ],
             ])
 
-            // Nom et prénom
+           
             ->add('nom', TextType::class, [
                 'label' => 'Nom',
                 'constraints' => [
@@ -54,15 +54,14 @@ class RegistrationFormType extends AbstractType
                 ],
             ])
             
-            // Email
+          
             ->add('email', EmailType::class, [
                 'label' => 'Adresse Email',
             ])
             
-            // Médecin (pour l'assistant)
             ->add('medecin', EntityType::class, [
                 'class' => Medecin::class,
-                'choices' => $options['medecins_choix'], // maintenant ce sont des objets Medecin
+                'choices' => $options['medecins_choix'], 
                 'choice_label' => fn(Medecin $m) => $m->getNom().' '.$m->getPrenom(),
                 'placeholder' => 'Choisissez le médecin',
                 'required' => false,
@@ -70,7 +69,7 @@ class RegistrationFormType extends AbstractType
             ])
             
 
-            // Mot de passe
+            
             ->add('plainPassword', RepeatedType::class, [
                 'type' => PasswordType::class,
                 'mapped' => false,
@@ -88,7 +87,7 @@ class RegistrationFormType extends AbstractType
                 ],
             ])
 
-            // Terms
+       
             ->add('agreeTerms', CheckboxType::class, [
                 'mapped' => false,
                 'constraints' => [
@@ -104,7 +103,7 @@ class RegistrationFormType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => RegistrationModel::class,
-            'medecins_choix' => [], // liste d'entités passée depuis le contrôleur
+            'medecins_choix' => [], 
         ]);
     }
 }
