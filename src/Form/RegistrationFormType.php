@@ -47,7 +47,7 @@ class RegistrationFormType extends AbstractType
                     new NotBlank(['message' => 'Veuillez entrer votre nom.']),
                 ],
             ])
-            ->add('prenom', TextType::class, [
+            ->add('prenom', TextType:: class, [
                 'label' => 'Prénom',
                 'constraints' => [
                     new NotBlank(['message' => 'Veuillez entrer votre prénom.']),
@@ -88,7 +88,7 @@ class RegistrationFormType extends AbstractType
             ])
 
        
-            ->add('agreeTerms', CheckboxType::class, [
+            ->add('agreeTerms', CheckboxType:: class, [
                 'mapped' => false,
                 'constraints' => [
                     new IsTrue([
@@ -104,6 +104,10 @@ class RegistrationFormType extends AbstractType
         $resolver->setDefaults([
             'data_class' => RegistrationModel::class,
             'medecins_choix' => [], 
+            // AJOUT :  Désactiver Turbo pour éviter l'erreur JavaScript
+            'attr' => [
+                'data-turbo' => 'false'
+            ]
         ]);
     }
 }
