@@ -40,7 +40,7 @@
         <div class="card">
           <h3 style="margin-top: 0;">Mes RDV</h3>
           <p class="text-muted">Consultez l'historique de vos rendez-vous</p>
-          <a href="{{ path('app_rendez_vous_index') }}" class="btn btn-outline" style="width: 100%; margin-top: 12px;">Voir mes RDV</a>
+          <a href="{{ path('app_mes_rendez_vous') }}" class="btn btn-outline" style="width: 100%; margin-top: 12px;">Voir mes RDV</a>
         </div>
         {% endif %}
         {% if is_granted('ROLE_MEDECIN') or is_medecin(app.user) %}
