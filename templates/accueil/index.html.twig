@@ -18,62 +18,63 @@
       
       <div style="display: flex; gap: 12px; align-items: center; margin-top: 16px;">
         {% if is_granted('ROLE_MEDECIN') %}
-          <span class="badge badge-primary">Médecin</span>
+          <span class="badge bg-primary">Médecin</span>
         {% elseif is_granted('ROLE_PATIENT') %}
-          <span class="badge badge-info">Patient</span>
+          <span class="badge bg-info">Patient</span>
         {% elseif is_granted('ROLE_ASSISTANT') %}
-          <span class="badge badge-warning">Assistant</span>
+          <span class="badge bg-warning">Assistant</span>
         {% endif %}
       </div>
     </div>
 
-    {# Actions rapides selon le rôle - afficher le bouton 'Prendre un RDV' pour tout utilisateur connecté #}
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 32px;">
-      {% if app.user %}
+      
+      {% if is_granted('ROLE_PATIENT') %}
         <div class="card">
           <h3 style="margin-top: 0;">Prendre un RDV</h3>
           <p class="text-muted">Demandez un rendez-vous auprès d'un médecin</p>
           <a href="{{ path('app_rendez_vous_new') }}" class="btn btn-primary" style="width: 100%; margin-top: 12px;">Nouveau RDV</a>
         </div>
 
-        {% if is_granted('ROLE_PATIENT') %}
         <div class="card">
           <h3 style="margin-top: 0;">Mes RDV</h3>
           <p class="text-muted">Consultez l'historique de vos rendez-vous</p>
-          <a href="{{ path('app_rendez_vous_index') }}" class="btn btn-outline" style="width: 100%; margin-top: 12px;">Voir mes RDV</a>
+          <a href="{{ path('app_rendez_vous_index') }}" class="btn btn-outline-primary" style="width: 100%; margin-top: 12px;">Voir mes RDV</a>
         </div>
-        {% endif %}
-        {% if is_granted('ROLE_MEDECIN') or is_medecin(app.user) %}
+
+      {% elseif is_granted('ROLE_MEDECIN') %}
         <div class="card">
           <h3 style="margin-top: 0;">Mes indisponibilités</h3>
           <p class="text-muted">Gérez vos créneaux indisponibles</p>
-          <a href="{{ path('indisponibilite_index') }}" class="btn btn-outline" style="width: 100%; margin-top: 12px;">Gérer mes indisponibilités</a>
-          <a href="/mes-rendez-vous" class="btn btn-outline" style="width: 100%; margin-top: 12px;">Voir mes RDV</a>
+          <a href="{{ path('indisponibilite_index') }}" class="btn btn-outline-primary" style="width: 100%; margin-top: 12px;">Gérer mes indisponibilités</a>
+          <a href="/mes-rendez-vous" class="btn btn-outline-primary" style="width: 100%; margin-top: 12px;">Voir mes RDV</a>
         </div>
-        {% endif %}
 
-      {% elseif is_granted('ROLE_MEDECIN') %}
         <div class="card">
           <h3 style="margin-top: 0;">RDV en attente</h3>
           <p class="text-muted">Validez ou refusez les demandes de RDV</p>
           <a href="" class="btn btn-primary" style="width: 100%; margin-top: 12px;">Voir les RDV</a>
         </div>
+
         <div class="card">
           <h3 style="margin-top: 0;">Mes assistants</h3>
           <p class="text-muted">Gérez votre équipe d'assistants</p>
-          <a href="" class="btn btn-outline" style="width: 100%; margin-top: 12px;">Voir les assistants</a>
+          <a href="" class="btn btn-outline-primary" style="width: 100%; margin-top: 12px;">Voir les assistants</a>
         </div>
+
       {% elseif is_granted('ROLE_ASSISTANT') %}
         <div class="card">
           <h3 style="margin-top: 0;">RDV du médecin</h3>
           <p class="text-muted">Consultez l'agenda de votre médecin</p>
           <a href="" class="btn btn-primary" style="width: 100%; margin-top: 12px;">Voir l'agenda</a>
         </div>
+
         <div class="card">
           <h3 style="margin-top: 0;">Rendez‑vous</h3>
           <p class="text-muted">Gérez les rendez‑vous et les demandes associées</p>
-          <a href="" class="btn btn-outline" style="width: 100%; margin-top: 12px;">Voir les RDV</a>
+          <a href="" class="btn btn-outline-primary" style="width: 100%; margin-top: 12px;">Voir les RDV</a>
         </div>
+
       {% endif %}
     </div>
 
