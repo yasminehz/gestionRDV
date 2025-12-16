@@ -3,28 +3,22 @@
 {% block title %}Medecin index{% endblock %}
 
 {% block body %}
-    <h1>Medecin index</h1>
+    <h1>Quel médecin souhaitez vous consulter ?</h1>
 
     <table class="table">
         <thead>
             <tr>
-                <th>Id</th>
-                <th>Email</th>
-                <th>Roles</th>
-                <th>Password</th>
-                <th>actions</th>
+                <th>Nom</th>
+                <th>Prenom</th>
             </tr>
         </thead>
         <tbody>
         {% for medecin in medecins %}
             <tr>
-                <td>{{ medecin.id }}</td>
-                <td>{{ medecin.email }}</td>
-                <td>{{ medecin.roles ? medecin.roles|json_encode : '' }}</td>
-                <td>{{ medecin.password }}</td>
+                <td>{{ medecin.nom }}</td>
+                <td>{{ medecin.prenom }}</td>
                 <td>
-                    <a href="{{ path('app_medecin_show', {'id': medecin.id}) }}">show</a>
-                    <a href="{{ path('app_medecin_edit', {'id': medecin.id}) }}">edit</a>
+                    <a href="{{ path('app_medecin_show', {'id': medecin.id}) }}">Choisir</a>
                 </td>
             </tr>
         {% else %}
