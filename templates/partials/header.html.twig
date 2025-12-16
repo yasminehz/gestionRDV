@@ -10,6 +10,9 @@
       {% if app.user %}
         {# Utilisateur connecté #}
         <a href="{{ path('homepage') }}" class="site-nav-link">Accueil</a>
+        {% if is_granted('ROLE_MEDECIN') or is_medecin(app.user) %}
+          <a href="{{ path('indisponibilite_index') }}" class="site-nav-link">Mes indisponibilités</a>
+        {% endif %}
         <span class="site-nav-user">{{ app.user.prenom }} {{ app.user.nom }}</span>
         <a href="{{ path('app_logout') }}" class="btn btn-sm btn-danger">Déconnexion</a>
       {% else %}

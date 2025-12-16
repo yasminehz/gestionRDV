@@ -16,6 +16,24 @@ class RendezVousRepository extends ServiceEntityRepository
         parent::__construct($registry, RendezVous::class);
     }
 
+    /**
+     * Find rendezvous for a medecin overlapping a given interval
+     *
+     * @return RendezVous[]
+     */
+    public function findOverlapping($medecin, \DateTimeInterface $start, \DateTimeInterface $end)
+    {
+        $qb = $this->createQueryBuilder('r')
+            ->andWhere('r.medecin = :m')
+            ->andWhere('r.debut < :end')
+            ->andWhere('r.fin > :start')
+            ->setParameter('m', $medecin)
+            ->setParameter('start', $start)
+            ->setParameter('end', $end);
+
+        return $qb->getQuery()->getResult();
+    }
+
     //    /**
     //     * @return RendezVous[] Returns an array of RendezVous objects
     //     */
