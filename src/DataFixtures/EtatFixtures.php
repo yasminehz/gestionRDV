@@ -11,11 +11,11 @@ class EtatFixtures extends Fixture
     public function load(ObjectManager $manager): void
     {
         $etats = [
-            'demande',
-            'confirme',
-            'annule',
-            'refuse',
-            'realise'
+            'demandé',
+            'confirmé',
+            'annulé',
+            'refusé',
+            'realisé'
         ];
 
         foreach ($etats as $libelle) {
