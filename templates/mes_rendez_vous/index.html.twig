@@ -1,0 +1,67 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello MesRendezVousController!{% endblock %}
+
+{% block body %}
+<div class="container content-wrapper">
+    <main>
+        <h1 class="mb-4">Mes rendez-vous</h1>
+
+        <form method="get" class="mb-4 card">
+            <div class="form-row">
+                <label for="etat">Filtrer par état :</label>
+                <select name="etat" id="etat" onchange="this.form.submit()">
+                    <option value="">-- Tous --</option>
+                    {% for etat in etats %}
+                        <option value="{{ etat.id }}"
+                            {{ etat.id == etatSelectionne ? 'selected' : '' }}>
+                            {{ etat.libelle|capitalize }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </form>
+
+        {% if rendezVous is empty %}
+            <div class="alert alert-info">
+                Aucun rendez-vous.
+            </div>
+        {% else %}
+            <div class="card">
+                <table style="width:100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="text-align:left; border-bottom:1px solid var(--border-light);">
+                            <th>Date</th>
+                            <th>Heure</th>
+                            <th>Médecin</th>
+                            <th>État</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for rdv in rendezVous %}
+                            <tr style="border-bottom:1px solid var(--border-light);">
+                                <td>{{ rdv.debut|date('d/m/Y') }}</td>
+                                <td>{{ rdv.debut|date('H:i') }} - {{ rdv.fin|date('H:i') }}</td>
+                                <td>Dr {{ rdv.medecin.nom }}</td>
+                                <td>
+                                    <span class="badge
+                                        {% if rdv.etat.libelle == 'demandé' %}badge-info{% endif %}
+                                        {% if rdv.etat.libelle == 'confirmé' %}badge-success{% endif %}
+                                        {% if rdv.etat.libelle == 'annulé' %}badge-danger{% endif %}
+                                        {% if rdv.etat.libelle == 'refusé' %}badge-danger{% endif %}
+                                        {% if rdv.etat.libelle == 'realisé' %}badge-primary{% endif %}
+                                    ">
+                                        {{ rdv.etat.libelle|capitalize }}
+                                    </span>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </main>
+</div>
+
+
+{% endblock %}
