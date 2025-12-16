@@ -18,8 +18,40 @@ class RendezVousRepository extends ServiceEntityRepository
     }
 
     /**
+     * Find rendezvous for a medecin overlapping a given interval
+     *
      * @return RendezVous[]
      */
+    public function findOverlapping($medecin, \DateTimeInterface $start, \DateTimeInterface $end)
+    {
+        $qb = $this->createQueryBuilder('r')
+            ->andWhere('r.medecin = :m')
+            ->andWhere('r.debut < :end')
+            ->andWhere('r.fin > :start')
+            ->setParameter('m', $medecin)
+            ->setParameter('start', $start)
+            ->setParameter('end', $end);
+
+        return $qb->getQuery()->getResult();
+    }
+
+    //    /**
+    //     * @return RendezVous[] Returns an array of RendezVous objects
+    //     */
+    //    public function findByExampleField($value): array
+    //    {
+    //        return $this->createQueryBuilder('r')
+    //            ->andWhere('r.exampleField = :val')
+    //            ->setParameter('val', $value)
+    //            ->orderBy('r.id', 'ASC')
+    //            ->setMaxResults(10)
+    //            ->getQuery()
+    //            ->getResult()
+    //        ;
+    //    }
+ /**
+ * @return RendezVous[]
+ */
     public function findByPatientAndEtat(Patient $patient, ?int $etatId): array
     {
         $qb = $this->createQueryBuilder('r')
