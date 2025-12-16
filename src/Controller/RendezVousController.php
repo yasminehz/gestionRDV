@@ -88,7 +88,7 @@ final class RendezVousController extends AbstractController
             $entityManager->persist($rendezVou);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_rendez_vous_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_mes_rendez_vous', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('rendez_vous/new.html.twig', [
