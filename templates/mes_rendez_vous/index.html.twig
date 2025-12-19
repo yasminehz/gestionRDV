@@ -33,7 +33,13 @@
                         <tr style="text-align:left; border-bottom:1px solid var(--border-light);">
                             <th>Date</th>
                             <th>Heure</th>
-                            <th>Médecin</th>
+                            <th>
+                                {% if role == 'patient' %}
+                                    Médecin
+                                {% else %}
+                                    Patient
+                                {% endif %}
+                            </th>
                             <th>État</th>
                         </tr>
                     </thead>
@@ -42,7 +48,14 @@
                             <tr style="border-bottom:1px solid var(--border-light);">
                                 <td>{{ rdv.debut|date('d/m/Y') }}</td>
                                 <td>{{ rdv.debut|date('H:i') }} - {{ rdv.fin|date('H:i') }}</td>
-                                <td>Dr {{ rdv.medecin.nom }}</td>
+                                <td>
+                                    {% if role == 'patient' %}
+                                        Dr {{ rdv.medecin.nom }}
+                                    {% else %}
+                                        {{ rdv.patient.nom }} {{ rdv.patient.prenom }}
+                                    {% endif %}
+                                </td>
+
                                 <td>
                                     <span class="badge
                                         {% if rdv.etat.libelle == 'demandé' %}badge-info{% endif %}

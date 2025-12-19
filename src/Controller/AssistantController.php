@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Assistant;
 use App\Form\AssistantType;
 use App\Repository\AssistantRepository;
+use App\Repository\RendezVousRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -65,6 +66,23 @@ final class AssistantController extends AbstractController
         return $this->render('assistant/edit.html.twig', [
             'assistant' => $assistant,
             'form' => $form,
+        ]);
+    }
+
+    #[Route('/{id}/rendezvous', name: 'app_assistant_rendezvous', methods: ['GET'])]
+    public function rendezvous(Assistant $assistant, RendezVousRepository $rendezVousRepository, Request $request): Response
+    {
+        $etat = $request->query->get('etat');
+        $medecin = $assistant->getMedecin();
+
+        $rendezvous = [];
+        if ($medecin) {
+            $rendezvous = $rendezVousRepository->findByMedecinAndEtat($medecin, $etat !== null ? (int) $etat : null);
+        }
+
+        return $this->render('assistant/rendezvous.html.twig', [
+            'assistant' => $assistant,
+            'rendezvous' => $rendezvous,
         ]);
     }
 

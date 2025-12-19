@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Patient;
+use App\Entity\Medecin;
 use App\Repository\EtatRepository;
 use App\Repository\RendezVousRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -18,24 +19,33 @@ final class MesRendezVousController extends AbstractController
         RendezVousRepository $rendezVousRepository,
         EtatRepository $etatRepository
     ): Response {
-        /** @var Patient $patient */
-        $patient = $this->getUser();
+        $user = $this->getUser();
 
-        if (!$patient instanceof Patient) {
-            throw $this->createAccessDeniedException();
+        if (in_array('ROLE_PATIENT', $user->getRoles())) {
+            $role = 'patient';
+        } elseif (in_array('ROLE_MEDECIN', $user->getRoles())) {
+            $role = 'medecin';
+        } else {
+            throw $this->createAccessDeniedException('Vous devez être connecté en tant que patient ou médecin.');
         }
 
+        // Récupération de l’état filtré
         $etatId = $request->query->get('etat');
         $etatId = $etatId !== null && $etatId !== '' ? (int)$etatId : null;
 
-        $rendezVous = $rendezVousRepository
-            ->findByPatientAndEtat($patient, $etatId);
-
+        // Récupération des RDV selon le rôle
+        if ($role === 'patient') {
+            $rendezVous = $rendezVousRepository->findByPatientAndEtat($user, $etatId);
+        } else {
+            $rendezVous = $rendezVousRepository->findByMedecinAndEtat($user, $etatId);
+        }
 
         return $this->render('mes_rendez_vous/index.html.twig', [
             'rendezVous' => $rendezVous,
             'etats' => $etatRepository->findAll(),
             'etatSelectionne' => $etatId,
+            'role' => $role,
         ]);
+
     }
 }
