@@ -38,28 +38,31 @@ public function register(Request $request, UserPasswordHasherInterface $userPass
     if ($form->isSubmitted() && $form->isValid()) {
         
         $userType = $form->get('userType')->getData();
-        $plainPassword = $form->get('plainPassword')->getData();
+    $plainPassword = $form->get('plainPassword')->getData();
 
-
-        switch ($userType) {
-            case 'patient':
-                $entityToPersist = new Patient();
-                break;
-            case 'medecin':
-                $entityToPersist = new Medecin();
-                break;
-            case 'assistant':
-                $entityToPersist = new Assistant();
-                break;
-            default:
-                throw new LogicException("Type d'utilisateur non supporté.");
-        }
+    // Créer l'entité selon le type choisi et définir le rôle
+    switch ($userType) {
+        case 'patient':
+            $entityToPersist = new Patient();
+            $roles = ['ROLE_PATIENT'];
+            break;
+        case 'medecin':
+            $entityToPersist = new Medecin();
+            $roles = ['ROLE_MEDECIN'];
+            break;
+        case 'assistant':
+            $entityToPersist = new Assistant();
+            $roles = ['ROLE_ASSISTANT'];
+            break;
+        default:
+            throw new LogicException("Type d'utilisateur non supporté.");
+    }
 
 
         $entityToPersist->setNom($form->get('nom')->getData());
         $entityToPersist->setPrenom($form->get('prenom')->getData());
         $entityToPersist->setEmail($form->get('email')->getData());
-
+        $entityToPersist->setRoles($roles);
 
         if ($entityToPersist instanceof Assistant) {
             $entityToPersist->setMedecin($form->get('medecin')->getData());

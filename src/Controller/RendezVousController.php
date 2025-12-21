@@ -111,6 +111,7 @@ public function new(
             ) {
                 $creneauxDispo[] = $c;
             }
+
         }
 
         return $this->render('rendez_vous/choix_creneau.html.twig', [

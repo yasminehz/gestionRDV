@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Rendez-vous du médecin{% endblock %}
+
+{% block body %}
+    <h1>Rendez-vous du médecin de l'assistant</h1>
+
+    {% if rendezvous is empty %}
+        <p>Aucun rendez-vous trouvé.</p>
+    {% else %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Patient</th>
+                    <th>Début</th>
+                    <th>Fin</th>
+                    <th>État</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in rendezvous %}
+                    <tr>
+                        <td>{{ r.id }}</td>
+                        <td>{{ r.patient ? r.patient.email : '' }}</td>
+                        <td>{{ r.debut ? r.debut|date('Y-m-d H:i') : '' }}</td>
+                        <td>{{ r.fin ? r.fin|date('Y-m-d H:i') : '' }}</td>
+                        <td>{{ r.etat ? r.etat.libelle : '' }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+    <a href="{{ path('app_assistant_show', {'id': assistant.id}) }}">Retour</a>
+{% endblock %}
