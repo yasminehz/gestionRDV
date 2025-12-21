@@ -92,10 +92,10 @@ public function new(
         $date = $rendezVous->getDebut();
 
         $creneauxPossibles = [
-            '09:00','09:30','10:00','10:30',
-            '11:00','11:30','13:00','13:30',
-            '14:00','14:30','15:00','15:30',
-            '16:00','16:30',
+            '09:00','10:00',
+            '11:00','13:00',
+            '14:00','15:00',
+            '16:00',
         ];
 
         $creneauxDispo = [];
@@ -125,16 +125,9 @@ public function new(
     ]);
 }
 
-    /*
+    
 
-    #[Route('/{id}', name: 'app_rendez_vous_show', methods: ['GET'])]
-    public function show(RendezVous $rendezVou): Response
-    {
-        return $this->render('rendez_vous/show.html.twig', [
-            'rendez_vou' => $rendezVou,
-        ]);
-    }
-
+/*
     #[Route('/{id}/edit', name: 'app_rendez_vous_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, RendezVous $rendezVou, EntityManagerInterface $entityManager): Response
     {

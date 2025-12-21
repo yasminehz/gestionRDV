@@ -41,6 +41,7 @@
                                 {% endif %}
                             </th>
                             <th>État</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -67,6 +68,36 @@
                                         {{ rdv.etat.libelle|capitalize }}
                                     </span>
                                 </td>
+                                <td>
+                                    {% if rdv.etat.libelle == 'demandé' %}
+                                    <a href="{{ path('app_mes_rendez_vous_show', { id: rdv.id }) }}"
+                                    class="btn btn-sm btn-primary">
+                                    
+                                        Consulter (Modifier/Annuler)
+                                    </a>
+                                    {% elseif rdv.etat.libelle == 'confirmé' and role == 'medecin' %}
+                                        <a href="{{ path('', { id: rdv.id }) }}"
+                                        class="btn btn-sm btn-warning">
+                                            Modifier
+                                        </a>
+                                
+                                    {#% if rdv.etat.libelle == 'demandé' %}
+                                        <a href="{{ path('app_mes_rendez_vous_edit', { id: rdv.id }) }}"
+                                        class="btn btn-sm btn-warning">
+                                            Modifier
+                                        </a>
+
+                                    {% elseif rdv.etat.libelle == 'confirmé' and role == 'medecin' %}
+                                        <a href="{{ path('', { id: rdv.id }) }}"
+                                        class="btn btn-sm btn-warning">
+                                            Modifier
+                                        </a>
+
+                                    {% else %}
+                                        <span class="text-muted">—</span>
+                                    {% endif %#}
+                                </td>
+
                             </tr>
                         {% endfor %}
                     </tbody>
