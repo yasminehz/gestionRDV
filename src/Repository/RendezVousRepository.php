@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Patient;
+use App\Entity\Medecin;
 use App\Entity\RendezVous;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -60,6 +61,24 @@ class RendezVousRepository extends ServiceEntityRepository
             ->orderBy('r.debut', 'ASC');
 
         if ($etatId) {
+            $qb->andWhere('r.etat = :etat')
+               ->setParameter('etat', $etatId);
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * @return RendezVous[]
+     */
+    public function findByMedecinAndEtat(Medecin $medecin, ?int $etatId): array
+    {
+        $qb = $this->createQueryBuilder('r')
+            ->andWhere('r.medecin = :medecin')
+            ->setParameter('medecin', $medecin)
+            ->orderBy('r.debut', 'ASC');
+
+        if ($etatId !== null) {
             $qb->andWhere('r.etat = :etat')
                ->setParameter('etat', $etatId);
         }

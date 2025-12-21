@@ -6,6 +6,17 @@
 <div class="container content-wrapper">
     <main>
         <h1 class="mb-4">Mes rendez-vous</h1>
+        {# determine ids for confirmé and annulé #}
+        {% set id_confirme = null %}
+        {% set id_annule = null %}
+        {% for e in etats %}
+            {% if e.libelle == 'confirmé' %}
+                {% set id_confirme = e.id %}
+            {% endif %}
+            {% if e.libelle == 'annulé' %}
+                {% set id_annule = e.id %}
+            {% endif %}
+        {% endfor %}
 
         <form method="get" class="mb-4 card">
             <div class="form-row">
@@ -34,7 +45,12 @@
                             <th>Date</th>
                             <th>Heure</th>
                             <th>Médecin</th>
+                            <th>Patient</th>
                             <th>État</th>
+
+                            {% if is_granted('ROLE_ASSISTANT') %}
+                                <th>Actions</th>
+                            {% endif %}
                         </tr>
                     </thead>
                     <tbody>
@@ -43,6 +59,8 @@
                                 <td>{{ rdv.debut|date('d/m/Y') }}</td>
                                 <td>{{ rdv.debut|date('H:i') }} - {{ rdv.fin|date('H:i') }}</td>
                                 <td>Dr {{ rdv.medecin.nom }}</td>
+                                <td> {{ rdv.patient.prenom }} {{ rdv.patient.nom }}</td>
+
                                 <td>
                                     <span class="badge
                                         {% if rdv.etat.libelle == 'demandé' %}badge-info{% endif %}
@@ -54,6 +72,21 @@
                                         {{ rdv.etat.libelle|capitalize }}
                                     </span>
                                 </td>
+                                {% if is_granted('ROLE_ASSISTANT') %}
+                                    <td style="white-space: nowrap;">
+                                        <form method="post" action="{{ path('app_rendez_vous_change_etat', {'id': rdv.id}) }}" style="display:inline-block; margin-right:6px;">
+                                            <input type="hidden" name="etat" value="{{ id_confirme }}">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('change_etat' ~ rdv.id) }}">
+                                            <button class="btn btn-sm btn-success" type="submit" {% if rdv.etat and rdv.etat.libelle == 'confirmé' %}disabled{% endif %}>Confirmer</button>
+                                        </form>
+
+                                        <form method="post" action="{{ path('app_rendez_vous_change_etat', {'id': rdv.id}) }}" style="display:inline-block;">
+                                            <input type="hidden" name="etat" value="{{ id_annule }}">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('change_etat' ~ rdv.id) }}">
+                                            <button class="btn btn-sm btn-danger" type="submit" {% if rdv.etat and rdv.etat.libelle == 'annulé' %}disabled{% endif %}>Annuler</button>
+                                        </form>
+                                    </td>
+                                {% endif %}
                             </tr>
                         {% endfor %}
                     </tbody>

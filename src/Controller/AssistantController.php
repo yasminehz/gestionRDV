@@ -5,6 +5,8 @@ namespace App\Controller;
 use App\Entity\Assistant;
 use App\Form\AssistantType;
 use App\Repository\AssistantRepository;
+use App\Repository\RendezVousRepository;
+use App\Repository\EtatRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -65,6 +67,35 @@ final class AssistantController extends AbstractController
         return $this->render('assistant/edit.html.twig', [
             'assistant' => $assistant,
             'form' => $form,
+        ]);
+    }
+
+    #[Route('/{id}/rendezvous', name: 'app_assistant_rendezvous', methods: ['GET'])]
+    public function rendezvous(Assistant $assistant, RendezVousRepository $rendezVousRepository, EtatRepository $etatRepository, Request $request): Response
+    {
+        $user = $this->getUser();
+
+        // Allow only the assistant owner or admins to view the appointments
+        if (!$this->isGranted('ROLE_ADMIN')) {
+            if (!$user instanceof Assistant || $user->getId() !== $assistant->getId()) {
+                throw $this->createAccessDeniedException('Accès non autorisé.');
+            }
+        }
+
+        $etatId = $request->query->get('etat');
+        $etatId = $etatId !== null && $etatId !== '' ? (int)$etatId : null;
+
+        $medecin = $assistant->getMedecin();
+
+        $rendezvous = [];
+        if ($medecin) {
+            $rendezvous = $rendezVousRepository->findByMedecinAndEtat($medecin, $etatId);
+        }
+
+        return $this->render('mes_rendez_vous/index.html.twig', [
+            'rendezVous' => $rendezvous,
+            'etats' => $etatRepository->findAll(),
+            'etatSelectionne' => $etatId,
         ]);
     }
 
