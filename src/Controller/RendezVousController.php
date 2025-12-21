@@ -204,7 +204,10 @@ public function new(
         } elseif ($user instanceof \App\Entity\Medecin && $user->getId() === $medecin->getId()) {
             $allowed = true;
         } elseif ($user instanceof \App\Entity\Assistant && $user->getMedecin() && $user->getMedecin()->getId() === $medecin->getId()) {
-            $allowed = true;
+            // Assistant uniquement: autorisé à confirmer (2) ou refuser (4)
+            if ($requestedEtatId !== null && in_array((int)$requestedEtatId, [2, 4], true)) {
+                $allowed = true;
+            }
         } elseif ($user instanceof \App\Entity\Patient && $rendezVou->getPatient() && $user->getId() === $rendezVou->getPatient()->getId()) {
             // Le patient ne peut que ANNULER (etat id = 3)
             if ($requestedEtatId !== null && (int)$requestedEtatId === 3) {
@@ -225,6 +228,17 @@ public function new(
         $etatId = $requestedEtatId;
         if ($etatId === null) {
             $this->addFlash('danger', 'État non spécifié.');
+            return $this->redirectToRoute('app_mes_rendez_vous');
+        }
+
+        // Règle métier: un RDV annulé par le patient ne peut pas être confirmé ni refusé par l'assistant
+        if (
+            $user instanceof \App\Entity\Assistant
+            && $rendezVou->getEtat()
+            && (int)$rendezVou->getEtat()->getId() === 3
+            && in_array((int)$etatId, [2, 4], true)
+        ) {
+            $this->addFlash('danger', 'Impossible de modifier (confirmer/refuser) un rendez-vous annulé par le patient.');
             return $this->redirectToRoute('app_mes_rendez_vous');
         }
 
