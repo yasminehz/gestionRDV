@@ -109,7 +109,7 @@
                                         Consulter (Modifier/Annuler)
                                     </a>
                                     {% elseif rdv.etat.libelle == 'confirmé' and role == 'medecin' %}
-                                        <a href="{{ path('', { id: rdv.id }) }}"
+                                        <a href="{{ path('app_mes_rendez_vous', { id: rdv.id }) }}"
                                         class="btn btn-sm btn-warning">
                                             Modifier
                                         </a>
