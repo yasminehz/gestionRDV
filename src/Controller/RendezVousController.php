@@ -140,7 +140,6 @@ public function new(
 
     
 
-/*
     #[Route('/{id}/edit', name: 'app_rendez_vous_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, RendezVous $rendezVou, EntityManagerInterface $entityManager): Response
     {

@@ -63,11 +63,7 @@
                             <th>Médecin</th>
                             <th>Patient</th>
                             <th>État</th>
-                            {% if is_granted('ROLE_ASSISTANT') %}
-                                <th>Actions</th>
-                            {% else %}
-                                <th></th>
-                            {% endif %#}
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -106,7 +102,7 @@
                                         </form>
                                     </td>
                                 {% else %}
-                                    {% if rdv.etat.libelle == 'demandé' %}
+                                    <td>{% if rdv.etat.libelle == 'demandé' %}
                                     <a href="{{ path('app_mes_rendez_vous_show', { id: rdv.id }) }}"
                                     class="btn btn-sm btn-primary">
                                     
@@ -117,7 +113,7 @@
                                         class="btn btn-sm btn-warning">
                                             Modifier
                                         </a>
-                                
+                                    {% endif %}
                                     {#% if rdv.etat.libelle == 'demandé' %}
                                         <a href="{{ path('app_mes_rendez_vous_edit', { id: rdv.id }) }}"
                                         class="btn btn-sm btn-warning">
@@ -134,6 +130,7 @@
                                         <span class="text-muted">—</span>
                                     {% endif %#}
                                 {% endif %}
+                                </td>
                             </tr>
                         {% endfor %}
                     </tbody>
