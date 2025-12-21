@@ -15,6 +15,7 @@ use App\Entity\Etat;
 use App\Entity\Medecin;
 use App\Repository\IndisponibiliteRepository;
 use App\Repository\EtatRepository;
+use App\Service\EmailService;
 
 
 #[Route('/rendez/vous/new')]
@@ -188,8 +189,13 @@ public function new(
     }
 
     #[Route('/{id}/etat', name: 'app_rendez_vous_change_etat', methods: ['POST'])]
-    public function changeEtat(Request $request, RendezVous $rendezVou, EtatRepository $etatRepository, EntityManagerInterface $entityManager): Response
-    {
+    public function changeEtat(
+        Request $request, 
+        RendezVous $rendezVou, 
+        EtatRepository $etatRepository, 
+        EntityManagerInterface $entityManager,
+        EmailService $emailService
+    ): Response {
         $user = $this->getUser();
 
         // Récupère la valeur demandée dès maintenant pour gérer le cas patient (annulation)
@@ -248,8 +254,19 @@ public function new(
             return $this->redirectToRoute('app_mes_rendez_vous');
         }
 
+        $ancienEtat = $rendezVou->getEtat();
         $rendezVou->setEtat($etat);
         $entityManager->flush();
+
+        // Envoyer un email si le rendez-vous est confirmé (état id = 2)
+        if ((int)$etatId === 2 && $ancienEtat && (int)$ancienEtat->getId() !== 2) {
+            try {
+                $emailService->sendRendezVousConfirmationEmail($rendezVou);
+            } catch (\Exception $e) {
+                // Log l'erreur mais ne bloque pas le processus
+                // L'état a déjà été changé avec succès
+            }
+        }
 
         $this->addFlash('success', 'État mis à jour.');
         return $this->redirectToRoute('app_mes_rendez_vous');
