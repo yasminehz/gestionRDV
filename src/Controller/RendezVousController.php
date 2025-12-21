@@ -14,6 +14,7 @@ use App\Entity\Patient;
 use App\Entity\Etat;
 use App\Entity\Medecin;
 use App\Repository\IndisponibiliteRepository;
+use App\Repository\EtatRepository;
 
 
 #[Route('/rendez/vous/new')]
@@ -22,6 +23,9 @@ final class RendezVousController extends AbstractController
     /*#[Route(name: 'app_rendez_vous_index', methods: ['GET'])]
     public function index(RendezVousRepository $rendezVousRepository): Response
     {
+        // Met à jour automatiquement les RDV confirmés passés à "réalisé"
+        $rendezVousRepository->updatePastConfirmedToRealise();
+
         return $this->render('rendez_vous/index.html.twig', [
             'rendez_vouses' => $rendezVousRepository->findAll(),
         ]);
@@ -181,5 +185,51 @@ public function new(
         }
 
         return $this->redirectToRoute('app_rendez_vous_index', [], Response::HTTP_SEE_OTHER);
-    }*/
+    }
+
+    #[Route('/{id}/etat', name: 'app_rendez_vous_change_etat', methods: ['POST'])]
+    public function changeEtat(Request $request, RendezVous $rendezVou, EtatRepository $etatRepository, EntityManagerInterface $entityManager): Response
+    {
+        $user = $this->getUser();
+
+        // permission: admin OR medecin owner OR assistant of the medecin
+        $medecin = $rendezVou->getMedecin();
+
+        $allowed = false;
+        if ($this->isGranted('ROLE_ADMIN')) {
+            $allowed = true;
+        } elseif ($user instanceof \App\Entity\Medecin && $user->getId() === $medecin->getId()) {
+            $allowed = true;
+        } elseif ($user instanceof \App\Entity\Assistant && $user->getMedecin() && $user->getMedecin()->getId() === $medecin->getId()) {
+            $allowed = true;
+        }
+
+        if (!$allowed) {
+            throw $this->createAccessDeniedException('Accès non autorisé');
+        }
+
+        $token = $request->request->get('_token');
+        if (!$this->isCsrfTokenValid('change_etat'.$rendezVou->getId(), $token)) {
+            $this->addFlash('danger', 'Jeton CSRF invalide.');
+            return $this->redirectToRoute('app_mes_rendez_vous');
+        }
+
+        $etatId = $request->request->get('etat');
+        if ($etatId === null) {
+            $this->addFlash('danger', 'État non spécifié.');
+            return $this->redirectToRoute('app_mes_rendez_vous');
+        }
+
+        $etat = $etatRepository->find((int)$etatId);
+        if (!$etat) {
+            $this->addFlash('danger', 'État invalide.');
+            return $this->redirectToRoute('app_mes_rendez_vous');
+        }
+
+        $rendezVou->setEtat($etat);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'État mis à jour.');
+        return $this->redirectToRoute('app_mes_rendez_vous');
+    }
 }

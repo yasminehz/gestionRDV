@@ -6,6 +6,7 @@ use App\Entity\Assistant;
 use App\Form\AssistantType;
 use App\Repository\AssistantRepository;
 use App\Repository\RendezVousRepository;
+use App\Repository\EtatRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -70,19 +71,37 @@ final class AssistantController extends AbstractController
     }
 
     #[Route('/{id}/rendezvous', name: 'app_assistant_rendezvous', methods: ['GET'])]
-    public function rendezvous(Assistant $assistant, RendezVousRepository $rendezVousRepository, Request $request): Response
+    public function rendezvous(Assistant $assistant, RendezVousRepository $rendezVousRepository, EtatRepository $etatRepository, Request $request): Response
     {
-        $etat = $request->query->get('etat');
+        $user = $this->getUser();
+
+        // Allow only the assistant owner or admins to view the appointments
+        if (!$this->isGranted('ROLE_ADMIN')) {
+            if (!$user instanceof Assistant || $user->getId() !== $assistant->getId()) {
+                throw $this->createAccessDeniedException('Accès non autorisé.');
+            }
+        }
+
+        $etatId = $request->query->get('etat');
+        $etatId = $etatId !== null && $etatId !== '' ? (int)$etatId : null;
+
         $medecin = $assistant->getMedecin();
+
+        // Met à jour automatiquement les RDV confirmés passés à "réalisé"
+        $updated = $rendezVousRepository->updatePastConfirmedToRealise();
+        if ($updated > 0) {
+            $this->addFlash('success', sprintf('%d rendez-vous mis à jour en "réalisé".', $updated));
+        }
 
         $rendezvous = [];
         if ($medecin) {
-            $rendezvous = $rendezVousRepository->findByMedecinAndEtat($medecin, $etat !== null ? (int) $etat : null);
+            $rendezvous = $rendezVousRepository->findByMedecinAndEtat($medecin, $etatId);
         }
 
-        return $this->render('assistant/rendezvous.html.twig', [
-            'assistant' => $assistant,
-            'rendezvous' => $rendezvous,
+        return $this->render('mes_rendez_vous/index.html.twig', [
+            'rendezVous' => $rendezvous,
+            'etats' => $etatRepository->findAll(),
+            'etatSelectionne' => $etatId,
         ]);
     }
 

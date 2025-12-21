@@ -66,7 +66,7 @@
         <div class="card">
           <h3 style="margin-top: 0;">RDV du médecin</h3>
           <p class="text-muted">Consultez l'agenda de votre médecin</p>
-          <a href="" class="btn btn-primary" style="width: 100%; margin-top: 12px;">Voir l'agenda</a>
+          <a href="{{ path('app_assistant_rendezvous', {'id': app.user.id}) }}" class="btn btn-primary" style="width: 100%; margin-top: 12px;">Voir l'agenda</a>
         </div>
 
         <div class="card">
