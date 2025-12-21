@@ -1,11 +1,17 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}New RendezVous{% endblock %}
+{% block title %}Nouveau Rendez-vous{% endblock %}
 
 {% block body %}
-    <h1>Create new RendezVous</h1>
+   {{ form_start(form, {
+        attr: { 'data-turbo': 'false' }
+    }) }}
+        {{ form_row(form.debut) }}
+        {{ form_row(form.medecin) }}
 
-    {{ include('rendez_vous/_form.html.twig') }}
+        <button type="submit" class="btn btn-primary">
+            Voir les créneaux disponibles
+        </button>
+    {{ form_end(form) }}
 
-    <a href="{{ path('app_rendez_vous_index') }}">back to list</a>
 {% endblock %}

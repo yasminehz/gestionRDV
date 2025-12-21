@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}RendezVous{% endblock %}
+
+{% block body %}
+<h2>Créneaux disponibles</h2>
+
+{% if creneaux is empty %}
+    <p>Aucun créneau disponible pour cette date.</p>
+{% else %}
+    <form method="post" data-turbo="false" class="creneaux-form">
+        <input type="hidden" name="_token" value="{{ csrf_token('choix_creneau') }}">
+        <input type="hidden" name="date" value="{{ rendezVous.debut|date('Y-m-d') }}">
+        <input type="hidden" name="medecin" value="{{ rendezVous.medecin.id }}">
+
+        <div class="creneaux-grid" style="display:flex; flex-wrap:wrap; gap:10px;">
+            {% for c in creneaux %}
+                <button type="submit" 
+                        name="creneau" 
+                        value="{{ c }}" 
+                        class="creneau-btn"
+                        style="flex: 0 0 49%; text-align:center;">
+                    {{ c }}
+                </button>
+            {% endfor %}
+        </div>
+
+    </form>
+
+{% endif %}
+{% endblock %}

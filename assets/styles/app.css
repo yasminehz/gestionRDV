@@ -550,6 +550,42 @@ button[type="submit"]:active {
 }
 
 /* =============================================
+   CRENEAUX GRID
+============================================= */
+.creneaux-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    gap: 12px;
+    max-width: 500px;
+    margin-top: 15px;
+}
+
+/* boutons créneaux */
+.creneau-btn {
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background: #f5f5f5;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+    font-weight: 600;
+}
+
+.creneau-btn:hover {
+    background: #0d6efd;
+    color: white;
+    border-color: #0d6efd;
+}
+
+/* pour éviter que les boutons prennent 100% */
+.creneaux-form button[type="submit"] {
+    width: auto; /* au lieu de 100% */
+    min-width: 80px;
+}
+
+
+/* =============================================
    RESPONSIVE DESIGN
 ============================================= */
 @media (max-width: 768px) {
@@ -581,4 +617,27 @@ button[type="submit"]:active {
     .container {
         padding: 0 var(--space-sm);
     }
+    .creneaux-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    gap: 12px;
+    max-width: 500px;
+    margin-top: 15px;
+}
+
+.creneau-btn {
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background: #f5f5f5;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.creneau-btn:hover {
+    background: #0d6efd;
+    color: white;
+    border-color: #0d6efd;
+}
+
 }
