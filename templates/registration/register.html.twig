@@ -7,7 +7,9 @@
         <h1 class="text-3xl font-bold mb-6 text-gray-800">Créer un compte</h1>
 
         {# Affichage global des erreurs du formulaire #}
-        {{ form_errors(registrationForm) }}
+        <div class="mb-4">
+            {{ form_errors(registrationForm) }}
+        </div>
 
         {{ form_start(registrationForm, {'attr': {'class': 'max-w-md mx-auto bg-white p-8 rounded-lg shadow-lg'}}) }}
 
@@ -23,27 +25,32 @@
             <div class="mb-4">
                 <label class="block text-gray-700 text-sm font-bold mb-2">{{ form_label(registrationForm.nom, 'Nom') }}</label>
                 {{ form_widget(registrationForm.nom, {'attr': {'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'}}) }}
-                {{ form_errors(registrationForm.nom) }}
+                <div class="text-red-600 text-sm mt-1">{{ form_errors(registrationForm.nom) }}</div>
             </div>
             
             <div class="mb-4">
                 <label class="block text-gray-700 text-sm font-bold mb-2">{{ form_label(registrationForm.prenom, 'Prénom') }}</label>
                 {{ form_widget(registrationForm.prenom, {'attr': {'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'}}) }}
-                {{ form_errors(registrationForm.prenom) }}
+                <div class="text-red-600 text-sm mt-1">{{ form_errors(registrationForm.prenom) }}</div>
             </div>
 
 
             <div class="mb-4">
                 <label class="block text-gray-700 text-sm font-bold mb-2">{{ form_label(registrationForm.email, 'Adresse Email') }}</label>
                 {{ form_widget(registrationForm.email, {'attr': {'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'}}) }}
-                {{ form_errors(registrationForm.email) }}
+                <div class="text-red-600 text-sm mt-1">{{ form_errors(registrationForm.email) }}</div>
             </div>
 
             <div class="mb-6">
-                <label class="block text-gray-700 text-sm font-bold mb-2">{{ form_label(registrationForm.plainPassword, 'Mot de passe') }}</label>
-                {{ form_widget(registrationForm.plainPassword.first, {'attr': {'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline', 'placeholder': 'Mot de passe'}}) }}
+                <label class="block text-gray-700 text-sm font-bold mb-2">{{ form_label(registrationForm.plainPassword.first, 'Mot de passe') }}</label>
+                {{ form_widget(registrationForm.plainPassword.first, {'attr': {'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline', 'placeholder': 'Mot de passe (min. 6 caractères)'}}) }}
+                
+                <label class="block text-gray-700 text-sm font-bold mb-2 mt-3">{{ form_label(registrationForm.plainPassword.second, 'Confirmer le mot de passe') }}</label>
                 {{ form_widget(registrationForm.plainPassword.second, {'attr': {'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline', 'placeholder': 'Confirmer le mot de passe'}}) }}
-                {{ form_errors(registrationForm.plainPassword) }}
+                
+                <div class="text-red-600 text-sm mt-2 font-semibold">
+                    {{ form_errors(registrationForm.plainPassword) }}
+                </div>
             </div>
 
 
