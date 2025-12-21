@@ -1,7 +1,6 @@
 {{ form_start(form) }}
     {{ form_row(form.debut) }}
     {{ form_row(form.medecin) }}
-    {{ form_row(form.creneau) }}
     <div id="computed-end" style="margin-top:8px; font-weight:600;"></div>
     <button class="btn">{{ button_label|default('Save') }}</button>
 {{ form_end(form) }}
@@ -11,7 +10,6 @@
         function fetchSlots() {
             var dateEl = document.querySelector('input.js-datepicker');
             var medSel = document.querySelector('select[name$="[medecin]"]');
-            var slotSel = document.querySelector('select[name$="[creneau]"]');
             if (!dateEl || !medSel || !slotSel) return;
             var date = dateEl.value;
             var med = medSel.value;
