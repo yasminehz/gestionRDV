@@ -6,6 +6,21 @@
 <div class="container content-wrapper">
     <main>
         <h1 class="mb-4">Mes rendez-vous</h1>
+        {# determine ids for confirmé, annulé, and refusé #}
+        {% set id_confirme = null %}
+        {% set id_annule = null %}
+        {% set id_refuse = null %}
+        {% for e in etats %}
+            {% if e.libelle == 'confirmé' %}
+                {% set id_confirme = e.id %}
+            {% endif %}
+            {% if e.libelle == 'annulé' %}
+                {% set id_annule = e.id %}
+            {% endif %}
+            {% if e.libelle == 'refusé' %}
+                {% set id_refuse = e.id %}
+            {% endif %}
+        {% endfor %}
 
         <form method="get" class="mb-4 card">
             <div class="form-row">
@@ -19,6 +34,18 @@
                         </option>
                     {% endfor %}
                 </select>
+
+                {% if role == 'medecin' or role == 'assistant' %}
+                    <label for="jour" style="margin-left: 20px;">Période :</label>
+                    <select name="jour" id="jour" onchange="document.getElementById('date').value=''; this.form.submit();">
+                        <option value="">-- Tous les jours --</option>
+                        <option value="aujourdhui" {{ jourFilter == 'aujourdhui' ? 'selected' : '' }}>Aujourd'hui</option>
+                    </select>
+
+                    <label for="date" style="margin-left: 20px;">Date spécifique :</label>
+                    <input type="date" name="date" id="date" value="{{ dateSelectionnee }}">
+                    <button type="submit" class="btn btn-sm btn-primary" style="margin-left: 10px;" onclick="document.getElementById('jour').value='';">Rechercher</button>
+                {% endif %}
             </div>
         </form>
 
@@ -33,15 +60,14 @@
                         <tr style="text-align:left; border-bottom:1px solid var(--border-light);">
                             <th>Date</th>
                             <th>Heure</th>
-                            <th>
-                                {% if role == 'patient' %}
-                                    Médecin
-                                {% else %}
-                                    Patient
-                                {% endif %}
-                            </th>
+                            <th>Médecin</th>
+                            <th>Patient</th>
                             <th>État</th>
-                            <th></th>
+                            {% if is_granted('ROLE_ASSISTANT') %}
+                                <th>Actions</th>
+                            {% else %}
+                                <th></th>
+                            {% endif %#}
                         </tr>
                     </thead>
                     <tbody>
@@ -49,13 +75,8 @@
                             <tr style="border-bottom:1px solid var(--border-light);">
                                 <td>{{ rdv.debut|date('d/m/Y') }}</td>
                                 <td>{{ rdv.debut|date('H:i') }} - {{ rdv.fin|date('H:i') }}</td>
-                                <td>
-                                    {% if role == 'patient' %}
-                                        Dr {{ rdv.medecin.nom }}
-                                    {% else %}
-                                        {{ rdv.patient.nom }} {{ rdv.patient.prenom }}
-                                    {% endif %}
-                                </td>
+                                <td>Dr {{ rdv.medecin.nom }}</td>
+                                <td> {{ rdv.patient.prenom }} {{ rdv.patient.nom }}</td>
 
                                 <td>
                                     <span class="badge
@@ -63,12 +84,28 @@
                                         {% if rdv.etat.libelle == 'confirmé' %}badge-success{% endif %}
                                         {% if rdv.etat.libelle == 'annulé' %}badge-danger{% endif %}
                                         {% if rdv.etat.libelle == 'refusé' %}badge-danger{% endif %}
-                                        {% if rdv.etat.libelle == 'realisé' %}badge-primary{% endif %}
+                                        {% if rdv.etat.libelle == 'réalisé' %}badge-primary{% endif %}
                                     ">
                                         {{ rdv.etat.libelle|capitalize }}
                                     </span>
                                 </td>
-                                <td>
+                                
+                                {# Assistant: Confirmer/Refuser; Patient: Annuler #}
+                                {% if is_granted('ROLE_ASSISTANT') %}
+                                    <td style="white-space: nowrap;">
+                                        <form method="post" action="{{ path('app_rendez_vous_change_etat', {'id': rdv.id}) }}" style="display:inline-block; margin-right:6px;">
+                                            <input type="hidden" name="etat" value="{{ id_confirme }}">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('change_etat' ~ rdv.id) }}">
+                                            <button class="btn btn-sm btn-success" type="submit" {% if rdv.etat and rdv.etat.libelle == 'confirmé' %}disabled{% endif %}>Confirmer</button>
+                                        </form>
+
+                                        <form method="post" action="{{ path('app_rendez_vous_change_etat', {'id': rdv.id}) }}" style="display:inline-block;">
+                                            <input type="hidden" name="etat" value="{{ id_refuse }}">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('change_etat' ~ rdv.id) }}">
+                                            <button class="btn btn-sm btn-danger" type="submit" {% if rdv.etat and rdv.etat.libelle == 'refusé' %}disabled{% endif %}>Refuser</button>
+                                        </form>
+                                    </td>
+                                {% else %}
                                     {% if rdv.etat.libelle == 'demandé' %}
                                     <a href="{{ path('app_mes_rendez_vous_show', { id: rdv.id }) }}"
                                     class="btn btn-sm btn-primary">
@@ -96,8 +133,7 @@
                                     {% else %}
                                         <span class="text-muted">—</span>
                                     {% endif %#}
-                                </td>
-
+                                {% endif %}
                             </tr>
                         {% endfor %}
                     </tbody>

@@ -9,6 +9,7 @@ use App\Model\RegistrationModel;
 use App\Entity\User; // Garder User pour le type hinting et les propriétés communes
 use App\Form\RegistrationFormType;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -73,10 +74,17 @@ public function register(Request $request, UserPasswordHasherInterface $userPass
             $userPasswordHasher->hashPassword($entityToPersist, $plainPassword)
         );
 
-        $entityManager->persist($entityToPersist);
-        $entityManager->flush();
+        try {
+            $entityManager->persist($entityToPersist);
+            $entityManager->flush();
 
-        return $this->redirectToRoute('app_accueil');
+            $this->addFlash('success', 'Inscription réussie ! Vous pouvez maintenant vous connecter.');
+            return $this->redirectToRoute('app_accueil');
+        } catch (UniqueConstraintViolationException $e) {
+            $this->addFlash('danger', 'Cette adresse email est déjà utilisée. Veuillez en choisir une autre.');
+        } catch (\Exception $e) {
+            $this->addFlash('danger', 'Une erreur est survenue lors de l\'inscription. Veuillez réessayer.');
+        }
     }
 
     return $this->render('registration/register.html.twig', [
