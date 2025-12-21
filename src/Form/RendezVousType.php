@@ -18,21 +18,21 @@ class RendezVousType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
+            // Choix de la date
             ->add('debut', DateType::class, [
-                    'widget' => 'single_text',
-                    'html5' => false,
-                    'input' => 'datetime',
-                    'attr' => ['class' => 'js-datepicker'],
-                ])
-            // patient is assigned from the authenticated user in the controller
+                'widget' => 'single_text',
+                'html5' => false,
+                'attr' => ['class' => 'js-datepicker'],
+                'label' => 'Date du rendez-vous',
+            ])
+            // Choix du médecin
             ->add('medecin', EntityType::class, [
                 'class' => Medecin::class,
                 'choice_label' => function(Medecin $medecin) {
                     return $medecin->getPrenom() . ' ' . $medecin->getNom();
                 },
-            ])
-            // 'etat' is set automatically in the controller (default id = 1)
-        ;
+                'label' => 'Médecin',
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

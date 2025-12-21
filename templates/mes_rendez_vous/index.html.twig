@@ -63,10 +63,11 @@
                             <th>Médecin</th>
                             <th>Patient</th>
                             <th>État</th>
-
                             {% if is_granted('ROLE_ASSISTANT') %}
                                 <th>Actions</th>
-                            {% endif %}
+                            {% else %}
+                                <th></th>
+                            {% endif %#}
                         </tr>
                     </thead>
                     <tbody>
@@ -104,14 +105,34 @@
                                             <button class="btn btn-sm btn-danger" type="submit" {% if rdv.etat and rdv.etat.libelle == 'refusé' %}disabled{% endif %}>Refuser</button>
                                         </form>
                                     </td>
-                                {% elseif is_granted('ROLE_PATIENT') %}
-                                    <td style="white-space: nowrap;">
-                                        <form method="post" action="{{ path('app_rendez_vous_change_etat', {'id': rdv.id}) }}" style="display:inline-block;">
-                                            <input type="hidden" name="etat" value="{{ id_annule }}">
-                                            <input type="hidden" name="_token" value="{{ csrf_token('change_etat' ~ rdv.id) }}">
-                                            <button class="btn btn-sm btn-danger" type="submit" {% if rdv.etat and rdv.etat.libelle == 'annulé' %}disabled{% endif %}>Annuler</button>
-                                        </form>
-                                    </td>
+                                {% else %}
+                                    {% if rdv.etat.libelle == 'demandé' %}
+                                    <a href="{{ path('app_mes_rendez_vous_show', { id: rdv.id }) }}"
+                                    class="btn btn-sm btn-primary">
+                                    
+                                        Consulter (Modifier/Annuler)
+                                    </a>
+                                    {% elseif rdv.etat.libelle == 'confirmé' and role == 'medecin' %}
+                                        <a href="{{ path('', { id: rdv.id }) }}"
+                                        class="btn btn-sm btn-warning">
+                                            Modifier
+                                        </a>
+                                
+                                    {#% if rdv.etat.libelle == 'demandé' %}
+                                        <a href="{{ path('app_mes_rendez_vous_edit', { id: rdv.id }) }}"
+                                        class="btn btn-sm btn-warning">
+                                            Modifier
+                                        </a>
+
+                                    {% elseif rdv.etat.libelle == 'confirmé' and role == 'medecin' %}
+                                        <a href="{{ path('', { id: rdv.id }) }}"
+                                        class="btn btn-sm btn-warning">
+                                            Modifier
+                                        </a>
+
+                                    {% else %}
+                                        <span class="text-muted">—</span>
+                                    {% endif %#}
                                 {% endif %}
                             </tr>
                         {% endfor %}

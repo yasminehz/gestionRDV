@@ -1,0 +1,42 @@
+{{ form_start(form) }}
+    {{ form_row(form.debut) }}
+    {{ form_row(form.medecin) }}
+    <div id="computed-end" style="margin-top:8px; font-weight:600;"></div>
+    <button class="btn">{{ button_label|default('Save') }}</button>
+{{ form_end(form) }}
+
+<script>
+    (function(){
+        function fetchSlots() {
+            var dateEl = document.querySelector('input.js-datepicker');
+            var medSel = document.querySelector('select[name$="[medecin]"]');
+            if (!dateEl || !medSel || !slotSel) return;
+            var date = dateEl.value;
+            var med = medSel.value;
+            if (!date || !med) return;
+            fetch('/medecin/' + med + '/available-slots?date=' + encodeURIComponent(date))
+                .then(r => r.json())
+                .then(data => {
+                    // clear
+                    slotSel.innerHTML = '';
+                    data.forEach(function(s){
+                        var opt = document.createElement('option');
+                        opt.value = s.value;
+                        opt.text = s.label + (s.available ? '' : ' (indisponible)');
+                        if (!s.available) opt.disabled = true;
+                        slotSel.appendChild(opt);
+                    });
+                    var evt = new Event('change'); slotSel.dispatchEvent(evt);
+                }).catch(console.error);
+        }
+
+        document.addEventListener('change', function(e){
+            if (e.target.matches('.js-datepicker') || e.target.matches('select[name$="[medecin]"]')) {
+                fetchSlots();
+            }
+        });
+
+        // initial fetch
+        fetchSlots();
+    })();
+</script>
