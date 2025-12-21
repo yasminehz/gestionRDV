@@ -51,15 +51,9 @@
         </div>
 
         <div class="card">
-          <h3 style="margin-top: 0;">RDV en attente</h3>
-          <p class="text-muted">Validez ou refusez les demandes de RDV</p>
-          <a href="" class="btn btn-primary" style="width: 100%; margin-top: 12px;">Voir les RDV</a>
-        </div>
-
-        <div class="card">
           <h3 style="margin-top: 0;">Mes assistants</h3>
           <p class="text-muted">Gérez votre équipe d'assistants</p>
-          <a href="" class="btn btn-outline-primary" style="width: 100%; margin-top: 12px;">Voir les assistants</a>
+          <a href="{{ path('app_medecin_assistants', {'id': app.user.id}) }}" class="btn btn-outline-primary" style="width: 100%; margin-top: 12px;">Voir les assistants</a>
         </div>
 
       {% elseif is_granted('ROLE_ASSISTANT') %}

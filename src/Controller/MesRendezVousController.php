@@ -35,17 +35,32 @@ final class MesRendezVousController extends AbstractController
         $etatId = $request->query->get('etat');
         $etatId = $etatId !== null && $etatId !== '' ? (int)$etatId : null;
 
+        $jourFilter = $request->query->get('jour');
+        $aujourdhui = $jourFilter === 'aujourdhui';
+
+        $dateString = $request->query->get('date');
+        $dateSpecifique = null;
+        if ($dateString) {
+            try {
+                $dateSpecifique = new \DateTime($dateString);
+            } catch (\Exception $e) {
+                $dateSpecifique = null;
+            }
+        }
+
         // Récupération des RDV selon le rôle
         if ($role === 'patient') {
             $rendezVous = $rendezVousRepository->findByPatientAndEtat($user, $etatId);
         } else {
-            $rendezVous = $rendezVousRepository->findByMedecinAndEtat($user, $etatId);
+            $rendezVous = $rendezVousRepository->findByMedecinAndEtat($user, $etatId, $aujourdhui, $dateSpecifique);
         }
 
         return $this->render('mes_rendez_vous/index.html.twig', [
             'rendezVous' => $rendezVous,
             'etats' => $etatRepository->findAll(),
             'etatSelectionne' => $etatId,
+            'jourFilter' => $jourFilter,
+            'dateSelectionnee' => $dateString,
             'role' => $role,
         ]);
 

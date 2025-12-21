@@ -71,7 +71,7 @@ class RendezVousRepository extends ServiceEntityRepository
     /**
      * @return RendezVous[]
      */
-    public function findByMedecinAndEtat(Medecin $medecin, ?int $etatId): array
+    public function findByMedecinAndEtat(Medecin $medecin, ?int $etatId, bool $aujourdhui = false, ?\DateTime $dateSpecifique = null): array
     {
         $qb = $this->createQueryBuilder('r')
             ->andWhere('r.medecin = :medecin')
@@ -83,11 +83,31 @@ class RendezVousRepository extends ServiceEntityRepository
                ->setParameter('etat', $etatId);
         }
 
+        if ($aujourdhui) {
+            $tz = new \DateTimeZone('Europe/Paris');
+            $today = new \DateTime('today', $tz);
+            $tomorrow = new \DateTime('tomorrow', $tz);
+            
+            $qb->andWhere('r.debut >= :today')
+               ->andWhere('r.debut < :tomorrow')
+               ->setParameter('today', $today)
+               ->setParameter('tomorrow', $tomorrow);
+        } elseif ($dateSpecifique) {
+            $tz = new \DateTimeZone('Europe/Paris');
+            $debut = (clone $dateSpecifique)->setTime(0, 0, 0);
+            $fin = (clone $dateSpecifique)->setTime(23, 59, 59);
+            
+            $qb->andWhere('r.debut >= :debut')
+               ->andWhere('r.debut <= :fin')
+               ->setParameter('debut', $debut)
+               ->setParameter('fin', $fin);
+        }
+
         return $qb->getQuery()->getResult();
     }
 
     /**
-     * Met à jour les rendez-vous confirmés passés à l'état "réalisé"
+     * Met à jour les rendez-vous confirmés passés à l'état "réalisé" à chaque chargement de la page
      */
     public function updatePastConfirmedToRealise(): int
     {
