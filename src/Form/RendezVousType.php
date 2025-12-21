@@ -18,24 +18,11 @@ class RendezVousType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-                ->add('debut', DateType::class, [
+            ->add('debut', DateType::class, [
                     'widget' => 'single_text',
                     'html5' => false,
                     'input' => 'datetime',
                     'attr' => ['class' => 'js-datepicker'],
-                ])
-                ->add('creneau', ChoiceType::class, [
-                    'mapped' => false,
-                    'choices' => [
-                        '09:00' => '09:00', '09:30' => '09:30',
-                        '10:00' => '10:00', '10:30' => '10:30',
-                        '11:00' => '11:00', '11:30' => '11:30',
-                        '13:00' => '13:00', '13:30' => '13:30',
-                        '14:00' => '14:00', '14:30' => '14:30',
-                        '15:00' => '15:00', '15:30' => '15:30',
-                        '16:00' => '16:00', '16:30' => '16:30',
-                    ],
-                    'attr' => ['class' => 'js-creneau'],
                 ])
             // patient is assigned from the authenticated user in the controller
             ->add('medecin', EntityType::class, [
