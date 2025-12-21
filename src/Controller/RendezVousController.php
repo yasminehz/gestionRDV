@@ -90,12 +90,20 @@ public function new(
     $form = $this->createForm(RendezVousType::class, $rendezVous);
     $form->handleRequest($request);
 
-    if ($form->isSubmitted() && $form->isValid()) {
-
+    if ($form->isSubmitted()) {
+        // Vérifier que la date et le médecin sont bien sélectionnés
         $medecin = $rendezVous->getMedecin();
         $date = $rendezVous->getDebut();
 
-        $creneauxPossibles = [
+        if (!$date || !$medecin) {
+            $this->addFlash('danger', 'Veuillez sélectionner une date et un médecin.');
+            return $this->render('rendez_vous/new.html.twig', [
+                'form' => $form,
+            ]);
+        }
+
+        if ($form->isValid()) {
+            $creneauxPossibles = [
             '09:00','09:30','10:00','10:30',
             '11:00','11:30','13:00','13:30',
             '14:00','14:30','15:00','15:30',
@@ -122,6 +130,7 @@ public function new(
             'rendezVous' => $rendezVous,
             'creneaux' => $creneauxDispo,
         ]);
+        }
     }
 
     return $this->render('rendez_vous/new.html.twig', [

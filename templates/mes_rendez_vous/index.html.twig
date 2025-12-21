@@ -34,6 +34,18 @@
                         </option>
                     {% endfor %}
                 </select>
+
+                {% if role == 'medecin' or role == 'assistant' %}
+                    <label for="jour" style="margin-left: 20px;">Période :</label>
+                    <select name="jour" id="jour" onchange="document.getElementById('date').value=''; this.form.submit();">
+                        <option value="">-- Tous les jours --</option>
+                        <option value="aujourdhui" {{ jourFilter == 'aujourdhui' ? 'selected' : '' }}>Aujourd'hui</option>
+                    </select>
+
+                    <label for="date" style="margin-left: 20px;">Date spécifique :</label>
+                    <input type="date" name="date" id="date" value="{{ dateSelectionnee }}">
+                    <button type="submit" class="btn btn-sm btn-primary" style="margin-left: 10px;" onclick="document.getElementById('jour').value='';">Rechercher</button>
+                {% endif %}
             </div>
         </form>
 

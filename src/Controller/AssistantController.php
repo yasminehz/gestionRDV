@@ -85,6 +85,19 @@ final class AssistantController extends AbstractController
         $etatId = $request->query->get('etat');
         $etatId = $etatId !== null && $etatId !== '' ? (int)$etatId : null;
 
+        $jourFilter = $request->query->get('jour');
+        $aujourdhui = $jourFilter === 'aujourdhui';
+
+        $dateString = $request->query->get('date');
+        $dateSpecifique = null;
+        if ($dateString) {
+            try {
+                $dateSpecifique = new \DateTime($dateString);
+            } catch (\Exception $e) {
+                $dateSpecifique = null;
+            }
+        }
+
         $medecin = $assistant->getMedecin();
 
         // Met à jour automatiquement les RDV confirmés passés à "réalisé"
@@ -95,13 +108,16 @@ final class AssistantController extends AbstractController
 
         $rendezvous = [];
         if ($medecin) {
-            $rendezvous = $rendezVousRepository->findByMedecinAndEtat($medecin, $etatId);
+            $rendezvous = $rendezVousRepository->findByMedecinAndEtat($medecin, $etatId, $aujourdhui, $dateSpecifique);
         }
 
         return $this->render('mes_rendez_vous/index.html.twig', [
             'rendezVous' => $rendezvous,
             'etats' => $etatRepository->findAll(),
             'etatSelectionne' => $etatId,
+            'jourFilter' => $jourFilter,
+            'dateSelectionnee' => $dateString,
+            'role' => 'assistant',
         ]);
     }
 
