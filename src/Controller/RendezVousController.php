@@ -129,7 +129,7 @@ public function new(
     ]);
 }
 
-    /*
+    
 
     #[Route('/{id}', name: 'app_rendez_vous_show', methods: ['GET'])]
     public function show(RendezVous $rendezVou): Response
@@ -192,6 +192,9 @@ public function new(
     {
         $user = $this->getUser();
 
+        // Récupère la valeur demandée dès maintenant pour gérer le cas patient (annulation)
+        $requestedEtatId = $request->request->get('etat');
+        
         // permission: admin OR medecin owner OR assistant of the medecin
         $medecin = $rendezVou->getMedecin();
 
@@ -202,6 +205,11 @@ public function new(
             $allowed = true;
         } elseif ($user instanceof \App\Entity\Assistant && $user->getMedecin() && $user->getMedecin()->getId() === $medecin->getId()) {
             $allowed = true;
+        } elseif ($user instanceof \App\Entity\Patient && $rendezVou->getPatient() && $user->getId() === $rendezVou->getPatient()->getId()) {
+            // Le patient ne peut que ANNULER (etat id = 3)
+            if ($requestedEtatId !== null && (int)$requestedEtatId === 3) {
+                $allowed = true;
+            }
         }
 
         if (!$allowed) {
@@ -214,7 +222,7 @@ public function new(
             return $this->redirectToRoute('app_mes_rendez_vous');
         }
 
-        $etatId = $request->request->get('etat');
+        $etatId = $requestedEtatId;
         if ($etatId === null) {
             $this->addFlash('danger', 'État non spécifié.');
             return $this->redirectToRoute('app_mes_rendez_vous');
