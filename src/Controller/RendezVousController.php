@@ -77,7 +77,7 @@ public function new(
 
         $this->addFlash('success', 'Votre demande de rendez-vous a bien été envoyée.');
 
-        return $this->redirectToRoute('homepage');
+        return $this->redirectToRoute('app_mes_rendez_vous');
     }
 
     /* =========================
