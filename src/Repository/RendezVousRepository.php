@@ -85,4 +85,45 @@ class RendezVousRepository extends ServiceEntityRepository
 
         return $qb->getQuery()->getResult();
     }
+
+    /**
+     * Met à jour les rendez-vous confirmés passés à l'état "réalisé"
+     */
+    public function updatePastConfirmedToRealise(): int
+    {
+        $em = $this->getEntityManager();
+        
+        // Récupère les états par ID (préféré), fallback libellé si nécessaire
+        $etatRepo = $em->getRepository(\App\Entity\Etat::class);
+        $etatConfirme = $etatRepo->find(2) ?? $etatRepo->findOneBy(['libelle' => 'confirmé']);
+        $etatRealise = $etatRepo->find(5)
+            ?? $etatRepo->findOneBy(['libelle' => 'réalisé'])
+            ?? $etatRepo->findOneBy(['libelle' => 'realisé']);
+
+        if (!$etatConfirme || !$etatRealise) {
+            return 0;
+        }
+
+        // Sélectionne les RDV à mettre à jour puis met à jour entité par entité
+        // Utilise le fuseau Europe/Paris pour éviter les décalages
+        $tz = new \DateTimeZone('Europe/Paris');
+        $now = new \DateTimeImmutable('now', $tz);
+        $toUpdate = $this->createQueryBuilder('r')
+            ->where('r.etat = :etatConfirme')
+            ->andWhere('r.fin < :now')
+            ->setParameter('etatConfirme', $etatConfirme)
+            ->setParameter('now', $now)
+            ->getQuery()
+            ->getResult();
+
+        foreach ($toUpdate as $rdv) {
+            $rdv->setEtat($etatRealise);
+        }
+
+        if (!empty($toUpdate)) {
+            $em->flush();
+        }
+
+        return count($toUpdate);
+    }
 }

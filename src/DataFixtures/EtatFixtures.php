@@ -15,7 +15,7 @@ class EtatFixtures extends Fixture
             'confirmé',
             'annulé',
             'refusé',
-            'realisé'
+            'réalisé'
         ];
 
         foreach ($etats as $libelle) {

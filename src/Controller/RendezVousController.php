@@ -22,6 +22,9 @@ final class RendezVousController extends AbstractController
     #[Route(name: 'app_rendez_vous_index', methods: ['GET'])]
     public function index(RendezVousRepository $rendezVousRepository): Response
     {
+        // Met à jour automatiquement les RDV confirmés passés à "réalisé"
+        $rendezVousRepository->updatePastConfirmedToRealise();
+
         return $this->render('rendez_vous/index.html.twig', [
             'rendez_vouses' => $rendezVousRepository->findAll(),
         ]);

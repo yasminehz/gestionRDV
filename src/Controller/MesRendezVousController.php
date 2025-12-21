@@ -25,6 +25,9 @@ final class MesRendezVousController extends AbstractController
             throw $this->createAccessDeniedException();
         }
 
+        // Met à jour automatiquement les RDV confirmés passés à "réalisé"
+        $rendezVousRepository->updatePastConfirmedToRealise();
+
         $etatId = $request->query->get('etat');
         $etatId = $etatId !== null && $etatId !== '' ? (int)$etatId : null;
 

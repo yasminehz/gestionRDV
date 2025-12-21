@@ -87,6 +87,12 @@ final class AssistantController extends AbstractController
 
         $medecin = $assistant->getMedecin();
 
+        // Met à jour automatiquement les RDV confirmés passés à "réalisé"
+        $updated = $rendezVousRepository->updatePastConfirmedToRealise();
+        if ($updated > 0) {
+            $this->addFlash('success', sprintf('%d rendez-vous mis à jour en "réalisé".', $updated));
+        }
+
         $rendezvous = [];
         if ($medecin) {
             $rendezvous = $rendezVousRepository->findByMedecinAndEtat($medecin, $etatId);
