@@ -1,39 +1,68 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Patient index{% endblock %}
+{% block title %}Liste des patients{% endblock %}
 
 {% block body %}
-    <h1>Patient index</h1>
+<div class="container content-wrapper">
+    <div class="flex-between flex-center" style="margin-bottom: 24px;">
+        <h1 style="margin: 0;">Liste des patients</h1>
+        {{ include('components/button.html.twig', {
+            href: path('app_patient_new'),
+            label: 'Créer un patient',
+            icon: '➕',
+            variant: 'primary'
+        }) }}
+    </div>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Email</th>
-                <th>Roles</th>
-                <th>Password</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for patient in patients %}
-            <tr>
-                <td>{{ patient.id }}</td>
-                <td>{{ patient.email }}</td>
-                <td>{{ patient.roles ? patient.roles|json_encode : '' }}</td>
-                <td>{{ patient.password }}</td>
-                <td>
-                    <a href="{{ path('app_patient_show', {'id': patient.id}) }}">show</a>
-                    <a href="{{ path('app_patient_edit', {'id': patient.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="5">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-
-    <a href="{{ path('app_patient_new') }}">Create new</a>
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Nom</th>
+                    <th scope="col">Prénom</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for patient in patients %}
+                <tr>
+                    <td>{{ patient.id }}</td>
+                    <td>{{ patient.email }}</td>
+                    <td>{{ patient.nom }}</td>
+                    <td>{{ patient.prenom }}</td>
+                    <td>
+                        {{ include('components/button.html.twig', {
+                            href: path('app_patient_show', {id: patient.id}),
+                            label: 'Voir',
+                            variant: 'primary',
+                            size: 'sm'
+                        }) }}
+                        {{ include('components/button.html.twig', {
+                            href: path('app_patient_edit', {id: patient.id}),
+                            label: 'Modifier',
+                            variant: 'warning',
+                            size: 'sm'
+                        }) }}
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="5" class="center" style="padding: 40px;">
+                        {{ include('components/alert.html.twig', {
+                            type: 'info',
+                            message: 'Aucun patient enregistré dans le système.',
+                            cta: {
+                                href: path('app_patient_new'),
+                                label: 'Créer le premier patient'
+                            }
+                        }) }}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
 {% endblock %}
