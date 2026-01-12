@@ -715,66 +715,89 @@
 </style>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-  const toggle = document.getElementById('menuToggle');
-  const nav = document.getElementById('mainNav');
+// Guard: only run once globally
+if (!window.__themeToggleInitialized) {
+  window.__themeToggleInitialized = true;
 
-  if (toggle && nav) {
-    toggle.addEventListener('click', function() {
-      const expanded = this.getAttribute('aria-expanded') === 'true';
-      this.setAttribute('aria-expanded', !expanded);
-      nav.classList.toggle('is-open');
-      document.body.style.overflow = !expanded ? 'hidden' : '';
-    });
+  (function() {
+    const html = document.documentElement;
 
-    // Close menu when clicking a link
-    nav.querySelectorAll('a').forEach(function(link) {
-      link.addEventListener('click', function() {
-        toggle.setAttribute('aria-expanded', 'false');
-        nav.classList.remove('is-open');
-        document.body.style.overflow = '';
-      });
-    });
-  }
-
-  // ===== Theme Toggle Logic =====
-  const themeToggle = document.getElementById('themeToggle') || document.getElementById('themeToggleGuest');
-  const html = document.documentElement;
-  
-  // Check for saved theme preference or system preference
-  function getPreferredTheme() {
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
-      return savedTheme;
+    // ===== Theme Functions =====
+    function getPreferredTheme() {
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme) {
+        return savedTheme;
+      }
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     }
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-  }
 
-  // Apply theme
-  function setTheme(theme) {
-    html.setAttribute('data-theme', theme);
-    html.classList.remove('dark', 'light');
-    html.classList.add(theme);
-    localStorage.setItem('theme', theme);
-  }
+    function setTheme(theme) {
+      html.setAttribute('data-theme', theme);
+      html.classList.remove('dark', 'light');
+      html.classList.add(theme);
+      localStorage.setItem('theme', theme);
+    }
 
-  // Initialize theme
-  setTheme(getPreferredTheme());
-
-  // Toggle theme on button click
-  if (themeToggle) {
-    themeToggle.addEventListener('click', function() {
+    function toggleTheme() {
       const currentTheme = html.getAttribute('data-theme') || 'light';
       const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
       setTheme(newTheme);
-    });
-  }
-
-  // Listen for system theme changes
-  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
-    if (!localStorage.getItem('theme')) {
-      setTheme(e.matches ? 'dark' : 'light');
     }
-  });
-});
+
+    // Apply saved theme immediately
+    setTheme(getPreferredTheme());
+
+    // Listen for system theme changes
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+      if (!localStorage.getItem('theme')) {
+        setTheme(e.matches ? 'dark' : 'light');
+      }
+    });
+
+    // ===== Event Delegation for Theme Toggle (works with Turbo) =====
+    document.addEventListener('click', function(e) {
+      const themeBtn = e.target.closest('#themeToggle, #themeToggleGuest, .theme-toggle');
+      if (themeBtn) {
+        e.preventDefault();
+        e.stopPropagation();
+        toggleTheme();
+      }
+    }, true); // Use capture phase
+
+    // ===== Init function for mobile menu =====
+    function initMobileMenu() {
+      const toggle = document.getElementById('menuToggle');
+      const nav = document.getElementById('mainNav');
+
+      if (toggle && nav && !toggle.hasAttribute('data-initialized')) {
+        toggle.setAttribute('data-initialized', 'true');
+
+        toggle.addEventListener('click', function() {
+          const expanded = this.getAttribute('aria-expanded') === 'true';
+          this.setAttribute('aria-expanded', !expanded);
+          nav.classList.toggle('is-open');
+          document.body.style.overflow = !expanded ? 'hidden' : '';
+        });
+
+        nav.querySelectorAll('a').forEach(function(link) {
+          link.addEventListener('click', function() {
+            toggle.setAttribute('aria-expanded', 'false');
+            nav.classList.remove('is-open');
+            document.body.style.overflow = '';
+          });
+        });
+      }
+    }
+
+    // Run menu init
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initMobileMenu);
+    } else {
+      initMobileMenu();
+    }
+
+    document.addEventListener('turbo:load', initMobileMenu);
+    document.addEventListener('turbo:render', initMobileMenu);
+  })();
+}
 </script>
