@@ -42,17 +42,17 @@
                 </p>
             </div>
         </div>
-        <span class="status-badge-lg status-{{ rendez_vou.etat.libelle == 'confirme' ? 'success' : (rendez_vou.etat.libelle in ['annule', 'refuse'] ? 'danger' : (rendez_vou.etat.libelle == 'realise' ? 'info' : 'pending')) }}">
-            {% if rendez_vou.etat.libelle == 'confirme' %}
+        <span class="status-badge-lg status-{{ rendez_vou.etat.libelle == 'confirmé' ? 'success' : (rendez_vou.etat.libelle in ['annulé', 'refusé'] ? 'danger' : (rendez_vou.etat.libelle == 'réalisé' ? 'info' : 'pending')) }}">
+            {% if rendez_vou.etat.libelle == 'confirmé' %}
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <polyline points="20 6 9 17 4 12"></polyline>
                 </svg>
-            {% elseif rendez_vou.etat.libelle in ['annule', 'refuse'] %}
+            {% elseif rendez_vou.etat.libelle in ['annulé', 'refusé'] %}
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <line x1="18" y1="6" x2="6" y2="18"></line>
                     <line x1="6" y1="6" x2="18" y2="18"></line>
                 </svg>
-            {% elseif rendez_vou.etat.libelle == 'realise' %}
+            {% elseif rendez_vou.etat.libelle == 'réalisé' %}
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                     <polyline points="22 4 12 14.01 9 11.01"></polyline>
@@ -143,25 +143,50 @@
             Actions
         </h2>
 
-        {% if rendez_vou.etat.libelle == 'demande' %}
+        {% if rendez_vou.etat.libelle == 'demandé' %}
             <div class="action-buttons">
-                <a href="{{ path('app_mes_rendez_vous_edit', {id: rendez_vou.id}) }}" class="btn btn-warning btn-action">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                    </svg>
-                    Modifier le rendez-vous
-                </a>
-                <button type="button" class="btn btn-danger btn-action" onclick="openModal('cancel-confirm-{{ rendez_vou.id }}')">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <line x1="15" y1="9" x2="9" y2="15"></line>
-                        <line x1="9" y1="9" x2="15" y2="15"></line>
-                    </svg>
-                    Annuler le rendez-vous
-                </button>
+                {% if is_granted('ROLE_PATIENT') %}
+                    <a href="{{ path('app_mes_rendez_vous_edit', {id: rendez_vou.id}) }}" class="btn btn-warning btn-action">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        </svg>
+                        Modifier le rendez-vous
+                    </a>
+                    <button type="button" class="btn btn-danger btn-action" onclick="openModal('cancel-confirm-{{ rendez_vou.id }}')">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="15" y1="9" x2="9" y2="15"></line>
+                            <line x1="9" y1="9" x2="15" y2="15"></line>
+                        </svg>
+                        Annuler le rendez-vous
+                    </button>
+                {% endif %}
+                {% if is_granted('ROLE_ASSISTANT') or is_granted('ROLE_MEDECIN') %}
+                    <form method="post" action="{{ path('app_rendez_vous_change_etat', {'id': rendez_vou.id}) }}" style="display: inline;">
+                        <input type="hidden" name="etat" value="2">
+                        <input type="hidden" name="_token" value="{{ csrf_token('change_etat' ~ rendez_vou.id) }}">
+                        <button class="btn btn-success btn-action" type="submit">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            Confirmer
+                        </button>
+                    </form>
+                    <form method="post" action="{{ path('app_rendez_vous_change_etat', {'id': rendez_vou.id}) }}" style="display: inline;">
+                        <input type="hidden" name="etat" value="4">
+                        <input type="hidden" name="_token" value="{{ csrf_token('change_etat' ~ rendez_vou.id) }}">
+                        <button class="btn btn-danger btn-action" type="submit">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                            Refuser
+                        </button>
+                    </form>
+                {% endif %}
             </div>
-        {% elseif rendez_vou.etat.libelle == 'confirme' %}
+        {% elseif rendez_vou.etat.libelle == 'confirmé' %}
             <div class="status-message status-message-success">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
@@ -169,20 +194,35 @@
                 </svg>
                 <div>
                     <strong>Rendez-vous confirme</strong>
-                    <p>Votre rendez-vous a ete confirme par le cabinet medical.</p>
+                    <p>{% if is_granted('ROLE_PATIENT') %}Votre rendez-vous a ete confirme par le cabinet medical.{% else %}Ce rendez-vous est confirme.{% endif %}</p>
                 </div>
             </div>
             <div class="action-buttons" style="margin-top: 16px;">
-                <button type="button" class="btn btn-danger btn-action" onclick="openModal('cancel-confirm-{{ rendez_vou.id }}')">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <line x1="15" y1="9" x2="9" y2="15"></line>
-                        <line x1="9" y1="9" x2="15" y2="15"></line>
-                    </svg>
-                    Annuler le rendez-vous
-                </button>
+                {% if is_granted('ROLE_PATIENT') %}
+                    <button type="button" class="btn btn-danger btn-action" onclick="openModal('cancel-confirm-{{ rendez_vou.id }}')">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="15" y1="9" x2="9" y2="15"></line>
+                            <line x1="9" y1="9" x2="15" y2="15"></line>
+                        </svg>
+                        Annuler le rendez-vous
+                    </button>
+                {% endif %}
+                {% if is_granted('ROLE_ASSISTANT') or is_granted('ROLE_MEDECIN') %}
+                    <form method="post" action="{{ path('app_rendez_vous_change_etat', {'id': rendez_vou.id}) }}" style="display: inline;">
+                        <input type="hidden" name="etat" value="5">
+                        <input type="hidden" name="_token" value="{{ csrf_token('change_etat' ~ rendez_vou.id) }}">
+                        <button class="btn btn-primary btn-action" type="submit">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                            </svg>
+                            Marquer comme realise
+                        </button>
+                    </form>
+                {% endif %}
             </div>
-        {% elseif rendez_vou.etat.libelle == 'annule' %}
+        {% elseif rendez_vou.etat.libelle == 'annulé' %}
             <div class="status-message status-message-danger">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <circle cx="12" cy="12" r="10"></circle>
@@ -194,7 +234,7 @@
                     <p>Ce rendez-vous a ete annule.</p>
                 </div>
             </div>
-        {% elseif rendez_vou.etat.libelle == 'refuse' %}
+        {% elseif rendez_vou.etat.libelle == 'refusé' %}
             <div class="status-message status-message-danger">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -205,7 +245,7 @@
                     <p>Ce rendez-vous a ete refuse par le cabinet medical.</p>
                 </div>
             </div>
-        {% elseif rendez_vou.etat.libelle == 'realise' %}
+        {% elseif rendez_vou.etat.libelle == 'réalisé' %}
             <div class="status-message status-message-info">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
@@ -624,6 +664,41 @@
 [data-theme="dark"] .status-message-info {
     background: rgba(96, 165, 250, 0.15);
     color: #93c5fd;
+}
+
+[data-theme="dark"] .detail-item {
+    background: #0f172a;
+}
+
+[data-theme="dark"] .detail-item-label {
+    color: #94a3b8;
+}
+
+[data-theme="dark"] .detail-item-value {
+    color: #f1f5f9;
+}
+
+[data-theme="dark"] .detail-item-icon {
+    background: linear-gradient(135deg, rgba(129, 140, 248, 0.15) 0%, rgba(167, 139, 250, 0.1) 100%);
+    color: #818cf8;
+}
+
+[data-theme="dark"] .detail-item-icon-medecin {
+    background: linear-gradient(135deg, rgba(52, 211, 153, 0.15) 0%, rgba(110, 231, 183, 0.1) 100%);
+    color: #6ee7b7;
+}
+
+[data-theme="dark"] .detail-item-icon-patient {
+    background: linear-gradient(135deg, rgba(129, 140, 248, 0.15) 0%, rgba(167, 139, 250, 0.1) 100%);
+    color: #a5b4fc;
+}
+
+[data-theme="dark"] .detail-section-title {
+    color: #f1f5f9;
+}
+
+[data-theme="dark"] .detail-section-title svg {
+    color: #818cf8;
 }
 </style>
 {% endblock %}

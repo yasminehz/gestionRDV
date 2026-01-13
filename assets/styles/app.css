@@ -356,10 +356,23 @@ main {
    FORMS
 ============================================= */
 form {
-    background: white;
     padding: var(--space-lg);
     border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-light);
+    transition: all 0.3s ease;
+}
+
+/* Light mode form */
+form {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.9) 100%);
+    box-shadow: 0 4px 16px -4px rgba(99, 102, 241, 0.15), 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Dark mode form */
+[data-theme="dark"] form {
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, #4e46e57c 100%);
+    border-color: #334155;
+    box-shadow: 0 4px 16px -4px rgba(99, 102, 241, 0.25), 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .form-row {

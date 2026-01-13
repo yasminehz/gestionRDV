@@ -290,7 +290,14 @@ html.dark .medecin-card {
 [data-theme="dark"] .stats-bar,
 html.dark .filter-card,
 html.dark .stats-bar {
-  background: rgba(30, 41, 59, 0.9) !important;
+  background: #1e293b !important;
+}
+
+/* Dark mode select options */
+[data-theme="dark"] select option,
+html.dark select option {
+  background: #1e293b;
+  color: #f1f5f9;
 }
 
 [data-theme="dark"] .day-header,
@@ -3657,6 +3664,41 @@ textarea,
 
 [data-theme="dark"] body {
   animation: themeTransition 0.3s ease-out;
+}
+
+/* === Forms styling === */
+form {
+  padding: var(--space-lg, 24px);
+  border-radius: var(--radius-lg, 16px);
+  border: 1px solid var(--border-light, #e2e8f0);
+  transition: all 0.3s ease;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.9) 100%);
+  box-shadow: 0 4px 16px -4px rgba(99, 102, 241, 0.15), 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="dark"] form {
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, #4e46e561 100%) !important;
+  border-color: #334155 !important;
+  box-shadow: 0 4px 16px -4px rgba(99, 102, 241, 0.25), 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Forms inline (pour les boutons d'action) - pas de style de carte */
+form[style*="display: inline"],
+form.action-form,
+.action-form form {
+  padding: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+
+[data-theme="dark"] form[style*="display: inline"],
+[data-theme="dark"] form.action-form,
+[data-theme="dark"] .action-form form {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
 /* End of CSS */

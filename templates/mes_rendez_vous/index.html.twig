@@ -32,15 +32,19 @@
     {% set id_confirme = null %}
     {% set id_annule = null %}
     {% set id_refuse = null %}
+    {% set id_realise = null %}
     {% for e in etats %}
-        {% if e.libelle == 'confirme' %}
+        {% if e.libelle == 'confirmé' %}
             {% set id_confirme = e.id %}
         {% endif %}
-        {% if e.libelle == 'annule' %}
+        {% if e.libelle == 'annulé' %}
             {% set id_annule = e.id %}
         {% endif %}
-        {% if e.libelle == 'refuse' %}
+        {% if e.libelle == 'refusé' %}
             {% set id_refuse = e.id %}
+        {% endif %}
+        {% if e.libelle == 'réalisé' %}
+            {% set id_realise = e.id %}
         {% endif %}
     {% endfor %}
 
@@ -105,14 +109,14 @@
 
     {# Statistiques rapides #}
     {% if rendezVous is not empty %}
-        <div class="stats-bar">
+        <div class="stats-bar2">
             {% set nbDemandes = 0 %}
             {% set nbConfirmes = 0 %}
             {% set nbAnnules = 0 %}
             {% for rdv in rendezVous %}
-                {% if rdv.etat.libelle == 'demande' %}{% set nbDemandes = nbDemandes + 1 %}{% endif %}
-                {% if rdv.etat.libelle == 'confirme' %}{% set nbConfirmes = nbConfirmes + 1 %}{% endif %}
-                {% if rdv.etat.libelle in ['annule', 'refuse'] %}{% set nbAnnules = nbAnnules + 1 %}{% endif %}
+                {% if rdv.etat.libelle == 'demandé' %}{% set nbDemandes = nbDemandes + 1 %}{% endif %}
+                {% if rdv.etat.libelle == 'confirmé' %}{% set nbConfirmes = nbConfirmes + 1 %}{% endif %}
+                {% if rdv.etat.libelle in ['annulé', 'refusé'] %}{% set nbAnnules = nbAnnules + 1 %}{% endif %}
             {% endfor %}
             <div class="stat-item">
                 <span class="stat-number">{{ rendezVous|length }}</span>
@@ -161,7 +165,7 @@
         {% set moisFr = {'Jan': 'JAN', 'Feb': 'FÉV', 'Mar': 'MAR', 'Apr': 'AVR', 'May': 'MAI', 'Jun': 'JUIN', 'Jul': 'JUIL', 'Aug': 'AOÛT', 'Sep': 'SEP', 'Oct': 'OCT', 'Nov': 'NOV', 'Dec': 'DÉC'} %}
         <div class="rdv-list">
             {% for rdv in rendezVous %}
-                <article class="rdv-card {% if rdv.etat.libelle == 'demande' %}rdv-pending{% elseif rdv.etat.libelle == 'confirme' %}rdv-confirmed{% elseif rdv.etat.libelle in ['annule', 'refuse'] %}rdv-cancelled{% endif %}">
+                <article class="rdv-card {% if rdv.etat.libelle == 'demandé' %}rdv-pending{% elseif rdv.etat.libelle == 'confirmé' %}rdv-confirmed{% elseif rdv.etat.libelle in ['annulé', 'refusé'] %}rdv-cancelled{% endif %}">
                     <div class="rdv-date-badge">
                         <span class="rdv-date-day">{{ rdv.debut|date('d') }}</span>
                         <span class="rdv-date-month">{{ moisFr[rdv.debut|date('M')] }}</span>
@@ -190,12 +194,12 @@
                         </div>
 
                         <div class="rdv-status">
-                            <span class="status-badge status-{{ rdv.etat.libelle == 'confirme' ? 'success' : (rdv.etat.libelle in ['annule', 'refuse'] ? 'danger' : 'pending') }}">
-                                {% if rdv.etat.libelle == 'confirme' %}
+                            <span class="status-badge status-{{ rdv.etat.libelle == 'confirmé' ? 'success' : (rdv.etat.libelle in ['annulé', 'refusé'] ? 'danger' : 'pending') }}">
+                                {% if rdv.etat.libelle == 'confirmé' %}
                                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <polyline points="20 6 9 17 4 12"></polyline>
                                     </svg>
-                                {% elseif rdv.etat.libelle in ['annule', 'refuse'] %}
+                                {% elseif rdv.etat.libelle in ['annulé', 'refusé'] %}
                                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <line x1="18" y1="6" x2="6" y2="18"></line>
                                         <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -212,7 +216,7 @@
                     </div>
 
                     <div class="rdv-actions">
-                        {% if is_granted('ROLE_ASSISTANT') and rdv.etat.libelle == 'demande' %}
+                        {% if is_granted('ROLE_ASSISTANT') and rdv.etat.libelle == 'demandé' %}
                             <form method="post" action="{{ path('app_rendez_vous_change_etat', {'id': rdv.id}) }}" class="action-form">
                                 <input type="hidden" name="etat" value="{{ id_confirme }}">
                                 <input type="hidden" name="_token" value="{{ csrf_token('change_etat' ~ rdv.id) }}">
@@ -232,6 +236,23 @@
                                     </svg>
                                 </button>
                             </form>
+                        {% elseif is_granted('ROLE_ASSISTANT') and rdv.etat.libelle == 'confirmé' %}
+                            <a href="{{ path('app_mes_rendez_vous_show', {id: rdv.id}) }}" class="action-btn" title="Voir les details">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                            </a>
+                            <form method="post" action="{{ path('app_rendez_vous_change_etat', {'id': rdv.id}) }}" class="action-form">
+                                <input type="hidden" name="etat" value="{{ id_realise }}">
+                                <input type="hidden" name="_token" value="{{ csrf_token('change_etat' ~ rdv.id) }}">
+                                <button class="action-btn action-btn-realise" type="submit" title="Marquer comme realise">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                    </svg>
+                                </button>
+                            </form>
                         {% else %}
                             <a href="{{ path('app_mes_rendez_vous_show', {id: rdv.id}) }}" class="action-btn" title="Voir les details">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -239,7 +260,7 @@
                                     <circle cx="12" cy="12" r="3"></circle>
                                 </svg>
                             </a>
-                            {% if rdv.etat.libelle == 'demande' and role == 'patient' %}
+                            {% if rdv.etat.libelle == 'demandé' and role == 'patient' %}
                                 <a href="{{ path('app_mes_rendez_vous_edit', {id: rdv.id}) }}" class="action-btn action-btn-warning" title="Modifier">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
@@ -247,13 +268,23 @@
                                     </svg>
                                 </a>
                             {% endif %}
-                            {% if rdv.etat.libelle == 'confirme' and role == 'medecin' %}
+                            {% if rdv.etat.libelle == 'confirmé' and role == 'medecin' %}
                                 <a href="{{ path('app_mes_rendez_vous_edit', {id: rdv.id}) }}" class="action-btn action-btn-warning" title="Modifier">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                                         <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
                                     </svg>
                                 </a>
+                                <form method="post" action="{{ path('app_rendez_vous_change_etat', {'id': rdv.id}) }}" class="action-form">
+                                    <input type="hidden" name="etat" value="{{ id_realise }}">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('change_etat' ~ rdv.id) }}">
+                                    <button class="action-btn action-btn-realise" type="submit" title="Marquer comme realise">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                        </svg>
+                                    </button>
+                                </form>
                             {% endif %}
                         {% endif %}
                     </div>
@@ -396,6 +427,12 @@
 
 /* Stats Bar - Modern Cards */
 .stats-bar {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+}
+.stats-bar2 {
     display: flex;
     gap: 16px;
     margin-bottom: 28px;
@@ -702,6 +739,13 @@
     box-shadow: 0 6px 16px rgba(239, 68, 68, 0.25);
 }
 
+.action-btn-realise:hover {
+    color: white;
+    border-color: #8b5cf6;
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+    box-shadow: 0 6px 16px rgba(139, 92, 246, 0.25);
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .page-header {
@@ -733,6 +777,9 @@
     }
 
     .stats-bar {
+        justify-content: center;
+    }
+     .stats-bar2 {
         justify-content: center;
     }
 
@@ -798,8 +845,9 @@
 }
 
 [data-theme="dark"] .filter-card {
-    background: rgba(30, 41, 59, 0.9);
-    border-color: rgba(51, 65, 85, 0.8);
+    background: #1e293b;
+    border-color: #334155;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
 }
 
 [data-theme="dark"] .filter-label {
@@ -812,8 +860,13 @@
 
 [data-theme="dark"] .filter-select,
 [data-theme="dark"] .filter-input {
-    background: #1e293b;
+    background: #0f172a;
     border-color: #334155;
+    color: #f1f5f9;
+}
+
+[data-theme="dark"] .filter-select option {
+    background: #1e293b;
     color: #f1f5f9;
 }
 
@@ -832,7 +885,10 @@
     background: rgba(30, 41, 59, 0.8);
     border-color: #334155;
 }
-
+[data-theme="dark"] .stats-bar2 {
+    background: rgba(255, 255, 255, 0);
+    border-color: #334155;
+}
 [data-theme="dark"] .stat-item {
     background: #1e293b;
     border-color: #334155;
@@ -948,6 +1004,12 @@
 [data-theme="dark"] .action-btn-danger:hover {
     background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
     border-color: #ef4444;
+    color: white;
+}
+
+[data-theme="dark"] .action-btn-realise:hover {
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+    border-color: #8b5cf6;
     color: white;
 }
 

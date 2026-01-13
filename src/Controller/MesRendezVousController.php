@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Patient;
 use App\Entity\Medecin;
+use App\Entity\Assistant;
 use App\Repository\EtatRepository;
 use App\Repository\RendezVousRepository;
 use App\Repository\MedecinRepository;
@@ -25,13 +26,21 @@ final class MesRendezVousController extends AbstractController
         EtatRepository $etatRepository
     ): Response {
         $user = $this->getUser();
+        $medecin = null;
 
-        if (in_array('ROLE_PATIENT', $user->getRoles())) {
+        if ($user instanceof Patient) {
             $role = 'patient';
-        } elseif (in_array('ROLE_MEDECIN', $user->getRoles())) {
+        } elseif ($user instanceof Medecin) {
             $role = 'medecin';
+            $medecin = $user;
+        } elseif ($user instanceof Assistant) {
+            $role = 'assistant';
+            $medecin = $user->getMedecin();
+            if (!$medecin) {
+                throw $this->createAccessDeniedException('Aucun medecin associe a votre compte assistant.');
+            }
         } else {
-            throw $this->createAccessDeniedException('Vous devez etre connecte en tant que patient ou medecin.');
+            throw $this->createAccessDeniedException('Vous devez etre connecte en tant que patient, medecin ou assistant.');
         }
 
         // Met a jour automatiquement les RDV confirmes passes a "realise"
@@ -57,7 +66,8 @@ final class MesRendezVousController extends AbstractController
         if ($role === 'patient') {
             $rendezVous = $rendezVousRepository->findByPatientAndEtat($user, $etatId);
         } else {
-            $rendezVous = $rendezVousRepository->findByMedecinAndEtat($user, $etatId, $aujourdhui, $dateSpecifique);
+            // Medecin ou Assistant: affiche les RDV du medecin
+            $rendezVous = $rendezVousRepository->findByMedecinAndEtat($medecin, $etatId, $aujourdhui, $dateSpecifique);
         }
 
         return $this->render('mes_rendez_vous/index.html.twig', [

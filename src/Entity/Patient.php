@@ -49,4 +49,12 @@ class Patient extends User
 
         return $this;
     }
+
+    public function getRoles(): array
+    {
+        $roles = parent::getRoles();
+        $roles[] = 'ROLE_PATIENT';
+
+        return array_unique($roles);
+    }
 }

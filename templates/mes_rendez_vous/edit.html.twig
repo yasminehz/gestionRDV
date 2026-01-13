@@ -20,7 +20,7 @@
     </div>
 
     {# Recap du RDV actuel #}
-    <div class="card" style="margin-bottom: 24px; padding: 20px; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);">
+    <div class="card current-rdv" style="margin-bottom: 24px; padding: 20px;">
         <h2 style="margin-top: 0; font-size: 1.1rem; color: var(--muted);">Rendez-vous actuel</h2>
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; margin-top: 12px;">
             <div>
@@ -220,6 +220,67 @@
 .btn-outline:hover {
     border-color: var(--primary);
     color: var(--primary);
+}
+
+.current-rdv {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+/* ===== DARK MODE STYLES ===== */
+[data-theme="dark"] .current-rdv {
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    border-color: #334155;
+}
+
+[data-theme="dark"] .current-rdv h2 {
+    color: #94a3b8;
+}
+
+[data-theme="dark"] .current-rdv strong {
+    color: #cbd5e1;
+}
+
+[data-theme="dark"] .creneau-btn {
+    background: #1e293b;
+    border-color: #334155;
+}
+
+[data-theme="dark"] .creneau-btn:hover {
+    background: #0f172a;
+    border-color: #818cf8;
+}
+
+[data-theme="dark"] .creneau-heure {
+    color: #818cf8;
+}
+
+[data-theme="dark"] .creneau-medecin {
+    color: #f1f5f9;
+}
+
+[data-theme="dark"] .creneau-duree {
+    color: #94a3b8;
+}
+
+[data-theme="dark"] .btn-outline {
+    border-color: #334155;
+    color: #cbd5e1;
+}
+
+[data-theme="dark"] .btn-outline:hover {
+    border-color: #818cf8;
+    color: #818cf8;
+}
+
+[data-theme="dark"] .form-control {
+    background: #0f172a;
+    border-color: #334155;
+    color: #f1f5f9;
+}
+
+[data-theme="dark"] .form-control option {
+    background: #1e293b;
+    color: #f1f5f9;
 }
 </style>
 {% endblock %}

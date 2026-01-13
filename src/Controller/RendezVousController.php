@@ -120,8 +120,8 @@ final class RendezVousController extends AbstractController
         } elseif ($user instanceof \App\Entity\Medecin && $user->getId() === $medecin->getId()) {
             $allowed = true;
         } elseif ($user instanceof \App\Entity\Assistant && $user->getMedecin() && $user->getMedecin()->getId() === $medecin->getId()) {
-            // Assistant uniquement: autorise a confirmer (2) ou refuser (4)
-            if ($requestedEtatId !== null && in_array((int)$requestedEtatId, [2, 4], true)) {
+            // Assistant: autorise a confirmer (2), refuser (4) ou marquer realise (5)
+            if ($requestedEtatId !== null && in_array((int)$requestedEtatId, [2, 4, 5], true)) {
                 $allowed = true;
             }
         } elseif ($user instanceof \App\Entity\Patient && $rendezVou->getPatient() && $user->getId() === $rendezVou->getPatient()->getId()) {

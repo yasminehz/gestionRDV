@@ -58,13 +58,33 @@
         {{ form_end(form) }}
     </div>
 
-    <div class="card" style="padding: 20px; margin-top: 24px; background: #fff3cd; border-color: #ffc107;">
-        <h3 style="margin: 0 0 12px; color: #856404;">Supprimer cette disponibilite</h3>
-        <p style="margin: 0 0 16px; color: #856404;">Cette action est irreversible. Les rendez-vous deja pris sur cette plage ne seront pas affectes.</p>
+    <div class="card danger-zone" style="padding: 20px; margin-top: 24px;">
+        <h3 style="margin: 0 0 12px;">Supprimer cette disponibilite</h3>
+        <p style="margin: 0 0 16px;">Cette action est irreversible. Les rendez-vous deja pris sur cette plage ne seront pas affectes.</p>
         <form method="post" action="{{ path('disponibilite_delete', {id: dispo.id}) }}" onsubmit="return confirm('Etes-vous sur de vouloir supprimer cette plage horaire ?');">
             <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ dispo.id) }}">
             <button type="submit" class="btn btn-danger">Supprimer definitivement</button>
         </form>
     </div>
 </div>
+
+<style>
+.danger-zone {
+    background: #fff3cd;
+    border-color: #ffc107;
+}
+.danger-zone h3,
+.danger-zone p {
+    color: #856404;
+}
+
+[data-theme="dark"] .danger-zone {
+    background: rgba(251, 191, 36, 0.15);
+    border-color: rgba(251, 191, 36, 0.3);
+}
+[data-theme="dark"] .danger-zone h3,
+[data-theme="dark"] .danger-zone p {
+    color: #fbbf24;
+}
+</style>
 {% endblock %}

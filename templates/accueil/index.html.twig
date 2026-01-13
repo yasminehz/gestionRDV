@@ -255,12 +255,13 @@
 .welcome-card::before {
   content: '';
   position: absolute;
-  top: 0;
-  right: 0;
-  width: 300px;
-  height: 300px;
-  background: radial-gradient(circle, rgba(99, 102, 241, 0.08) 0%, transparent 70%);
+  top: -50%;
+  right: -10%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.06) 0%, transparent 60%);
   pointer-events: none;
+  opacity: 0.8;
 }
 
 .welcome-avatar {
@@ -836,8 +837,12 @@
 
 /* ===== DARK MODE STYLES ===== */
 [data-theme="dark"] .welcome-card {
-    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-    border-color: #334155;
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.98) 100%);
+    border-color: rgba(71, 85, 105, 0.5);
+}
+
+[data-theme="dark"] .welcome-card::before {
+    background: radial-gradient(circle, rgba(129, 140, 248, 0.08) 0%, transparent 70%);
 }
 
 [data-theme="dark"] .welcome-avatar {
@@ -861,8 +866,7 @@
 }
 
 [data-theme="dark"] .welcome-role {
-    background: rgba(129, 140, 248, 0.15);
-    color: #a5b4fc;
+    background: transparent;
 }
 
 [data-theme="dark"] .quick-actions-title {

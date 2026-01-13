@@ -123,4 +123,12 @@ class Medecin extends User
 
         return $this;
     }
+
+    public function getRoles(): array
+    {
+        $roles = parent::getRoles();
+        $roles[] = 'ROLE_MEDECIN';
+
+        return array_unique($roles);
+    }
 }
