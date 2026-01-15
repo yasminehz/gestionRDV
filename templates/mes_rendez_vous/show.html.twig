@@ -271,14 +271,15 @@
 </div>
 
 {# Modal de confirmation pour annulation #}
-{% if rendez_vou.etat.libelle not in ['realise', 'annule', 'refuse'] %}
+{% if rendez_vou.etat.libelle not in ['réalisé', 'annulé', 'refusé'] %}
     {{ include('components/modal_confirm.html.twig', {
         id: 'cancel-confirm-' ~ rendez_vou.id,
         title: 'Annuler le rendez-vous',
         message: 'Etes-vous sur de vouloir annuler ce rendez-vous ? Cette action est irreversible.',
         confirm_label: 'Annuler le rendez-vous',
         cancel_label: 'Conserver',
-        form_action: path('app_mes_rendez_vous_cancel', {id: rendez_vou.id})
+        form_action: path('app_mes_rendez_vous_cancel', {id: rendez_vou.id}),
+        csrf_token: csrf_token('cancel' ~ rendez_vou.id)
     }) }}
 {% endif %}
 

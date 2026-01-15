@@ -168,10 +168,16 @@ final class MesRendezVousController extends AbstractController
 
     #[Route('/mes-rendez-vous/{id}/cancel', name: 'app_mes_rendez_vous_cancel', methods: ['POST'], requirements: ['id' => '\d+'])]
     public function cancel(
+        Request $request,
         RendezVous $rendezVous,
         EtatRepository $etatRepository,
         EntityManagerInterface $entityManager
     ): Response {
+        // Verification CSRF
+        if (!$this->isCsrfTokenValid('cancel' . $rendezVous->getId(), $request->request->get('_token'))) {
+            throw $this->createAccessDeniedException('Token CSRF invalide.');
+        }
+
         $user = $this->getUser();
 
         // Securite : seul le patient ou le medecin concerne peut annuler
@@ -183,7 +189,7 @@ final class MesRendezVousController extends AbstractController
         }
 
         // Etats non annulables
-        if (in_array($rendezVous->getEtat()->getLibelle(), ['annulé', 'refusé', 'realisé'])) {
+        if (in_array($rendezVous->getEtat()->getLibelle(), ['annulé', 'refusé', 'réalisé'])) {
             $this->addFlash('warning', 'Ce rendez-vous ne peut plus etre annule.');
             return $this->redirectToRoute('app_mes_rendez_vous');
         }
@@ -198,7 +204,7 @@ final class MesRendezVousController extends AbstractController
         $rendezVous->setEtat($etatAnnule);
         $entityManager->flush();
 
-        $this->addFlash('success', 'Le rendez-vous a bien ete annule.');
+        $this->addFlash('success', 'ss Le rendez-vous a bien ete annule.');
 
         return $this->redirectToRoute('app_mes_rendez_vous');
     }

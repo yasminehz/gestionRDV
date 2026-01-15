@@ -1,4 +1,4 @@
-<div id="{{ id }}" class="modal" role="dialog" aria-modal="true" aria-labelledby="{{ id }}-title" style="display: none;">
+<div id="{{ id }}" class="modal" role="dialog" aria-modal="true" aria-labelledby="{{ id }}-title">
   <div class="modal-backdrop" onclick="closeModal('{{ id }}')"></div>
   <div class="modal-content">
     <h2 id="{{ id }}-title">{{ title }}</h2>
@@ -7,7 +7,7 @@
       {% if csrf_token is defined %}
         <input type="hidden" name="_token" value="{{ csrf_token }}">
       {% endif %}
-      <div class="flex-row" style="justify-content: flex-end;">
+      <div class="modal-footer">
         <button type="button" class="btn btn-secondary" onclick="closeModal('{{ id }}')">
           {{ cancel_label|default('Annuler') }}
         </button>
@@ -24,19 +24,26 @@
 function openModal(id) {
   const modal = document.getElementById(id);
   if (modal) {
-    modal.style.display = 'flex';
+    modal.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
     const firstButton = modal.querySelector('button[type="button"]');
     if (firstButton) firstButton.focus();
   }
 }
 function closeModal(id) {
   const modal = document.getElementById(id);
-  if (modal) modal.style.display = 'none';
+  if (modal) {
+    modal.classList.remove('is-open');
+    document.body.style.overflow = '';
+  }
 }
 // Close on Escape key
 document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') {
-    document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
+    document.querySelectorAll('.modal.is-open').forEach(m => {
+      m.classList.remove('is-open');
+    });
+    document.body.style.overflow = '';
   }
 });
 </script>
