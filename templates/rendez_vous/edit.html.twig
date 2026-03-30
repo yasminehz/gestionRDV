@@ -1,13 +1,35 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit RendezVous{% endblock %}
+{% block title %}Modifier le rendez-vous{% endblock %}
 
 {% block body %}
-    <h1>Edit RendezVous</h1>
+<div class="container content-wrapper" style="max-width:700px">
 
-    {{ include('rendez_vous/_form.html.twig', {'button_label': 'Update'}) }}
+    <h1 class="mb-3">Modifier le rendez-vous</h1>
 
-    <a href="{{ path('app_rendez_vous_index') }}">back to list</a>
+    <div class="alert alert-info">
+        Modifier un rendez-vous implique une nouvelle demande de confirmation
+        auprès du médecin.
+    </div>
 
-    {{ include('rendez_vous/_delete_form.html.twig') }}
+    <div class="card" style="padding:20px">
+        {{ form_start(form) }}
+
+        {{ form_row(form.medecin) }}
+        {{ form_row(form.date) }}
+        {{ form_row(form.creneau) }}
+
+        <button class="btn btn-warning mt-3">
+            Enregistrer les modifications
+        </button>
+
+        {{ form_end(form) }}
+    </div>
+
+    <a href="{{ path('app_rendez_vous_show', { id: rendez_vou.id }) }}"
+       class="btn btn-secondary mt-3">
+        Annuler
+    </a>
+
+</div>
 {% endblock %}

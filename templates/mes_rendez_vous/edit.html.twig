@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier le rendez-vous{% endblock %}
+
+{% block body %}
+<div class="container content-wrapper" style="max-width:700px">
+
+    <h1 class="mb-3">Modifier le rendez-vous</h1>
+
+    <div class="alert alert-info">
+        Modifier un rendez-vous implique une nouvelle demande de confirmation
+        auprès du médecin.
+    </div>
+
+    <h1>Modifier le rendez-vous</h1>
+
+    {{ form_start(form, { attr: { 'data-turbo': 'false' } }) }}
+        <button type="submit" class="btn btn-primary">
+            Voir les créneaux disponibles
+        </button><br><br>
+        {{ form_row(form.medecin) }}
+    {{ form_end(form) }}
+
+{% endblock %}
+

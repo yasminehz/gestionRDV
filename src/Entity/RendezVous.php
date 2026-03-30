@@ -65,7 +65,7 @@ class RendezVous
         return $this->debut;
     }
 
-    public function setDebut(\DateTime $debut): static
+    public function setDebut(?\DateTime $debut): static
     {
         $this->debut = $debut;
 
@@ -77,7 +77,7 @@ class RendezVous
         return $this->fin;
     }
 
-    public function setFin(\DateTime $fin): static
+    public function setFin(?\DateTime $fin): static
     {
         $this->fin = $fin;
 
