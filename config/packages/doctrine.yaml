@@ -1,13 +1,7 @@
 doctrine:
     dbal:
         url: '%env(resolve:DATABASE_URL)%'
-
-        # IMPORTANT: configure your server version here or in DATABASE_URL
-        # This project uses MariaDB 10.11.x; set server_version accordingly to avoid introspection queries
-        # Explicitly use the MariaDB platform to prevent DBAL from issuing MySQL8-only metadata queries
-        # Use the actual server-reported version to ensure DBAL selects the correct platform.
-        server_version: '9.4.0'
-
+        server_version: '10.3.39-MariaDB'
         profiling_collect_backtrace: '%kernel.debug%'
         use_savepoints: true
     orm:
@@ -28,7 +22,6 @@ doctrine:
 when@test:
     doctrine:
         dbal:
-            # "TEST_TOKEN" is typically set by ParaTest
             dbname_suffix: '_test%env(default::TEST_TOKEN)%'
 
 when@prod:
