@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Prescription;
+use App\Entity\RendezVous;
 use App\Form\PrescriptionType;
 use App\Repository\PrescriptionRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -22,14 +23,23 @@ final class PrescriptionController extends AbstractController
         ]);
     }
 
-    #[Route('/new', name: 'app_prescription_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    #[Route('/new/{rendezVous}', name: 'app_prescription_new', methods: ['GET', 'POST'])]
+    public function new(Request $request, RendezVous $rendezVous, EntityManagerInterface $entityManager): Response
     {
         $prescription = new Prescription();
-        $form = $this->createForm(PrescriptionType::class, $prescription);
+        $prescription->setRendezVous($rendezVous);
+
+        $form = $this->createForm(PrescriptionType::class, $prescription, [
+            'include_rendez_vous' => false,
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Convertir les jours en heures (format DateTime)
+            if ($prescription->getDuree()) {
+                $days = (int) $prescription->getDuree()->format("H");
+                $prescription->setDuree($this->convertDaysToDateTime($days));
+            }
             $entityManager->persist($prescription);
             $entityManager->flush();
 
@@ -57,6 +67,11 @@ final class PrescriptionController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Convertir les jours en heures (format DateTime)
+            if ($prescription->getDuree()) {
+                $days = (int) $prescription->getDuree()->format("H");
+                $prescription->setDuree($this->convertDaysToDateTime($days));
+            }
             $entityManager->flush();
 
             return $this->redirectToRoute('app_prescription_index', [], Response::HTTP_SEE_OTHER);
@@ -77,5 +92,13 @@ final class PrescriptionController extends AbstractController
         }
 
         return $this->redirectToRoute('app_prescription_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    private function convertDaysToDateTime(int $days): \DateTime
+    {
+        $heures = $days * 24;
+        $dateTime = new \DateTime();
+        $dateTime->setTime($heures % 24, 0, 0);
+        return $dateTime;
     }
 }

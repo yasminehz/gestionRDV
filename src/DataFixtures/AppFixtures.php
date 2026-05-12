@@ -7,6 +7,7 @@ use App\Entity\RendezVous;
 use App\Entity\Medecin;
 use App\Entity\Patient;
 use App\Entity\Etat;
+use App\Entity\Medicament;
 use App\Repository\EtatRepository;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
@@ -94,6 +95,24 @@ class AppFixtures extends Fixture implements DependentFixtureInterface
             $patients[] = $patient;
         }
 
+
+        // Créer des médicaments
+        $medicaments = [];
+        $medicamentsData = [
+            'Paracétamol',
+            'Ibuprofène',
+            'Amoxicilline',
+            'Doxycycline',
+            'Metformine',
+            'Lisinopril',
+        ];
+
+        foreach ($medicamentsData as $libelle) {
+            $medicament = new Medicament();
+            $medicament->setLibelle($libelle);
+            $manager->persist($medicament);
+            $medicaments[] = $medicament;
+        }
         $manager->flush();
 
         // Créer des rendez-vous après que les entités soient persistées

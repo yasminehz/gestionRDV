@@ -21,7 +21,7 @@
             </tr>
             <tr>
                 <th>Duree</th>
-                <td>{{ prescription.duree ? prescription.duree|date('H:i:s') : '' }}</td>
+                <td>{{ prescription.dureeEnJours ? (prescription.dureeEnJours|number_format(2, ',', ' ')) ~ ' jours' : '' }}</td>
             </tr>
         </tbody>
     </table>

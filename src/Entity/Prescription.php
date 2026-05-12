@@ -95,4 +95,14 @@ class Prescription
 
         return $this;
     }
+
+    public function getDureeEnJours(): ?float
+    {
+        if (!$this->duree) {
+            return null;
+        }
+        // Convertir les heures en jours (24 heures = 1 jour)
+        $heures = (float) $this->duree->format("H");
+        return $heures / 24;
+    }
 }

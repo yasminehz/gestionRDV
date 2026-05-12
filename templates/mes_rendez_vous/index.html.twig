@@ -6,7 +6,7 @@
 <div class="container content-wrapper">
     <main>
         <h1 class="mb-4">Mes rendez-vous</h1>
-        {# determine ids for confirmé, annulé, and refusé #}
+        {# determine ids for confirme, annule, and refuse #}
         {% set id_confirme = null %}
         {% set id_annule = null %}
         {% set id_refuse = null %}
@@ -73,7 +73,6 @@
                                 <td>{{ rdv.debut|date('H:i') }} - {{ rdv.fin|date('H:i') }}</td>
                                 <td>Dr {{ rdv.medecin.nom }}</td>
                                 <td> {{ rdv.patient.prenom }} {{ rdv.patient.nom }}</td>
-
                                 <td>
                                     <span class="badge
                                         {% if rdv.etat.libelle == 'demandé' %}badge-info{% endif %}
@@ -85,7 +84,7 @@
                                         {{ rdv.etat.libelle|capitalize }}
                                     </span>
                                 </td>
-                                
+
                                 {# Assistant: Confirmer/Refuser; Patient: Annuler #}
                                 {% if is_granted('ROLE_ASSISTANT') %}
                                     <td style="white-space: nowrap;">
@@ -102,35 +101,24 @@
                                         </form>
                                     </td>
                                 {% else %}
-                                    <td>{% if rdv.etat.libelle == 'demandé' %}
-                                    <a href="{{ path('app_mes_rendez_vous_show', { id: rdv.id }) }}"
-                                    class="btn btn-sm btn-primary">
-                                    
-                                        Consulter (Modifier/Annuler)
-                                    </a>
-                                    {% elseif rdv.etat.libelle == 'confirmé' and role == 'medecin' %}
-                                        <a href="{{ path('app_mes_rendez_vous', { id: rdv.id }) }}"
-                                        class="btn btn-sm btn-warning">
-                                            Modifier
-                                        </a>
-                                    {% endif %}
-                                    {#% if rdv.etat.libelle == 'demandé' %}
-                                        <a href="{{ path('app_mes_rendez_vous_edit', { id: rdv.id }) }}"
-                                        class="btn btn-sm btn-warning">
-                                            Modifier
-                                        </a>
+                                    <td style="white-space: nowrap;">
+                                        {% if rdv.etat.libelle == 'demandé' %}
+                                            <a href="{{ path('app_mes_rendez_vous_show', { id: rdv.id }) }}" class="btn btn-sm btn-primary">
+                                                Consulter (Modifier/Annuler)
+                                            </a>
+                                        {% elseif rdv.etat.libelle == 'confirmé' and role == 'medecin' %}
+                                            <a href="{{ path('app_mes_rendez_vous', { id: rdv.id }) }}" class="btn btn-sm btn-warning">
+                                                Modifier
+                                            </a>
+                                        {% endif %}
 
-                                    {% elseif rdv.etat.libelle == 'confirmé' and role == 'medecin' %}
-                                        <a href="{{ path('', { id: rdv.id }) }}"
-                                        class="btn btn-sm btn-warning">
-                                            Modifier
-                                        </a>
-
-                                    {% else %}
-                                        <span class="text-muted">—</span>
-                                    {% endif %#}
+                                        {% if role == 'medecin' %}
+                                            <a href="{{ path('app_prescription_new', { rendezVous: rdv.id }) }}" class="btn btn-sm btn-success" style="margin-left: 6px;">
+                                                Prescrire
+                                            </a>
+                                        {% endif %}
+                                    </td>
                                 {% endif %}
-                                </td>
                             </tr>
                         {% endfor %}
                     </tbody>

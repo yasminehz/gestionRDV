@@ -21,7 +21,7 @@
                 <td>{{ prescription.id }}</td>
                 <td>{{ prescription.quantite }}</td>
                 <td>{{ prescription.nombrePrise }}</td>
-                <td>{{ prescription.duree ? prescription.duree|date('H:i:s') : '' }}</td>
+                <td>{{ prescription.dureeEnJours ? (prescription.dureeEnJours|number_format(2, ',', ' ')) ~ ' jours' : '' }}</td>
                 <td>
                     <a href="{{ path('app_prescription_show', {'id': prescription.id}) }}">show</a>
                     <a href="{{ path('app_prescription_edit', {'id': prescription.id}) }}">edit</a>
@@ -35,5 +35,5 @@
         </tbody>
     </table>
 
-    <a href="{{ path('app_prescription_new') }}">Create new</a>
+    <p>La creation de prescription se fait depuis un rendez-vous.</p>
 {% endblock %}
