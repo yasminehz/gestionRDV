@@ -62,6 +62,14 @@
           <p class="text-muted">Consultez l'agenda de votre médecin</p>
           <a href="{{ path('app_assistant_rendezvous', {'id': app.user.id}) }}" class="btn btn-primary" style="width: 100%; margin-top: 12px;">Voir l'agenda</a>
         </div>
+
+        {# Recherche transverse : permet à l'assistant de retrouver tous les patients
+           ayant reçu un médicament donné, indépendamment des dates de RDV. #}
+        <div class="card">
+          <h3 style="margin-top: 0;">Patients par médicament</h3>
+          <p class="text-muted">Retrouvez les patients à qui un médicament a été prescrit</p>
+          <a href="{{ path('app_medicament_patients') }}" class="btn btn-outline-primary" style="width: 100%; margin-top: 12px;">Rechercher</a>
+        </div>
         {#}
         <div class="card">
           <h3 style="margin-top: 0;">Rendez‑vous</h3>

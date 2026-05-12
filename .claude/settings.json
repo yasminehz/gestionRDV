@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mysql -u login4356 -ppDKkhOjVKHuUJcB gestionRDV -e \"SHOW COLUMNS FROM doctrine_migration_versions\")",
+      "Bash(mysql -u login4356 -ppDKkhOjVKHuUJcB gestionRDV -e \"ALTER TABLE doctrine_migration_versions MODIFY COLUMN version VARCHAR\\(1024\\) NOT NULL\")",
+      "Bash(mysql -u login4356 -ppDKkhOjVKHuUJcB gestionRDV -e \"ALTER TABLE doctrine_migration_versions MODIFY COLUMN version VARCHAR\\(191\\) NOT NULL\")",
+      "Bash(mysql -u login4356 -ppDKkhOjVKHuUJcB gestionRDV -e \"SHOW CREATE TABLE doctrine_migration_versions\\\\G\")",
+      "Bash(mysql -u login4356 -ppDKkhOjVKHuUJcB gestionRDV -e \"SELECT TABLE_NAME, TABLE_COLLATION FROM information_schema.tables WHERE table_schema='gestionRDV'\")",
+      "Bash(mysql -u login4356 -ppDKkhOjVKHuUJcB gestionRDV -e \"ALTER TABLE doctrine_migration_versions CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci\")",
+      "Bash(mysql -u login4356 -ppDKkhOjVKHuUJcB gestionRDV)",
+      "Bash(mysql -u login4356 -ppDKkhOjVKHuUJcB -e \"SELECT VERSION\\(\\)\")",
+      "Bash(mysql -u login4356 -ppDKkhOjVKHuUJcB gestionRDV -e \"SHOW TABLES LIKE '%medicament%'; SHOW TABLES LIKE '%indication%'; DESCRIBE indication; DESCRIBE medicament;\")",
+      "Bash(mysql -u login4356 -ppDKkhOjVKHuUJcB gestionRDV -e ' *)"
+    ]
+  }
+}

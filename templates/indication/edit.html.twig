@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier une indication - RDV du {{ rendezVous.debut|date('d/m/Y') }}{% endblock %}
+
+{% block body %}
+<div class="container content-wrapper">
+    <main>
+        <h1 class="mb-4">Modifier une indication</h1>
+
+        {# Rappel du contexte : à quel RDV appartient cette indication #}
+        <div class="card mb-4">
+            <p>
+                <strong>Patient :</strong>
+                {{ rendezVous.patient.prenom }} {{ rendezVous.patient.nom }}
+            </p>
+            <p>
+                <strong>Date du rendez-vous :</strong>
+                {{ rendezVous.debut|date('d/m/Y') }}
+                ({{ rendezVous.debut|date('H:i') }} - {{ rendezVous.fin|date('H:i') }})
+            </p>
+        </div>
+
+        {# Formulaire pré-rempli avec les valeurs actuelles de l'indication #}
+        <div class="card">
+            {{ form_start(form) }}
+                {{ form_row(form.medicament) }}
+                {{ form_row(form.quantite) }}
+                {{ form_row(form.nbPriseParJour) }}
+                {{ form_row(form.duree) }}
+
+                <div style="margin-top: 1rem;">
+                    <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
+                    <a href="{{ path('app_indication_show', { id: rendezVous.id }) }}" class="btn btn-secondary">
+                        Annuler
+                    </a>
+                </div>
+            {{ form_end(form) }}
+        </div>
+    </main>
+</div>
+{% endblock %}

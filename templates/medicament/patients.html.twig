@@ -1,0 +1,71 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Patients par médicament{% endblock %}
+
+{% block body %}
+<div class="container content-wrapper">
+    <main>
+        <h1 class="mb-4">Patients par médicament</h1>
+
+        {# ====== Sélection du médicament ======
+           Formulaire GET (pas POST) : on veut une URL partageable et un
+           rechargement simple. La soumission se fait automatiquement au
+           changement (onchange="this.form.submit()"). #}
+        <form method="get" class="mb-4 card">
+            <div class="form-row">
+                <label for="medicament">Choisir un médicament :</label>
+                <select name="medicament" id="medicament" onchange="this.form.submit()">
+                    <option value="">-- Sélectionner --</option>
+                    {% for m in medicaments %}
+                        <option value="{{ m.id }}"
+                            {{ medicamentSelectionne and m.id == medicamentSelectionne.id ? 'selected' : '' }}>
+                            {{ m.libelle }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </form>
+
+        {# ====== Résultat ====== #}
+        {% if medicamentSelectionne is null %}
+            <div class="alert alert-info">
+                Veuillez sélectionner un médicament dans la liste ci-dessus.
+            </div>
+        {% else %}
+            <h2>
+                Patients ayant reçu : <em>{{ medicamentSelectionne.libelle }}</em>
+            </h2>
+
+            {% if patients is empty %}
+                <div class="alert alert-info">
+                    Aucun patient n'a reçu ce médicament en prescription.
+                </div>
+            {% else %}
+                <div class="card">
+                    <table style="width:100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="text-align:left; border-bottom:1px solid var(--border-light);">
+                                <th>Nom</th>
+                                <th>Prénom</th>
+                                <th>Email</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for patient in patients %}
+                                <tr style="border-bottom:1px solid var(--border-light);">
+                                    <td>{{ patient.nom }}</td>
+                                    <td>{{ patient.prenom }}</td>
+                                    <td>{{ patient.email }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <p style="margin-top:0.5rem;">
+                    <small>{{ patients|length }} patient(s) concerné(s)</small>
+                </p>
+            {% endif %}
+        {% endif %}
+    </main>
+</div>
+{% endblock %}

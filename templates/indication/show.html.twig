@@ -1,0 +1,115 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Prescription - RDV du {{ rendezVous.debut|date('d/m/Y') }}{% endblock %}
+
+{% block body %}
+{# On calcule UNE FOIS si l'utilisateur courant est le médecin titulaire de ce RDV.
+   Les boutons d'édition/suppression ne s'affichent que dans ce cas. #}
+{% set isOwnerMedecin = is_granted('ROLE_MEDECIN')
+    and app.user
+    and rendezVous.medecin
+    and app.user.id == rendezVous.medecin.id %}
+
+<div class="container content-wrapper">
+    <main>
+        <h1 class="mb-4">Prescription du {{ rendezVous.debut|date('d/m/Y') }}</h1>
+
+        {# ====== Bandeau récapitulatif du rendez-vous ====== #}
+        <div class="card mb-4">
+            <p>
+                <strong>Patient :</strong>
+                {{ rendezVous.patient.prenom }} {{ rendezVous.patient.nom }}
+            </p>
+            <p>
+                <strong>Médecin :</strong>
+                Dr {{ rendezVous.medecin.prenom }} {{ rendezVous.medecin.nom }}
+            </p>
+            <p>
+                <strong>Date et heure :</strong>
+                {{ rendezVous.debut|date('d/m/Y') }}
+                ({{ rendezVous.debut|date('H:i') }} - {{ rendezVous.fin|date('H:i') }})
+            </p>
+            <p>
+                <strong>État :</strong>
+                <span class="badge
+                    {% if rendezVous.etat.libelle == 'demandé' %}badge-info{% endif %}
+                    {% if rendezVous.etat.libelle == 'confirmé' %}badge-success{% endif %}
+                    {% if rendezVous.etat.libelle == 'annulé' %}badge-danger{% endif %}
+                    {% if rendezVous.etat.libelle == 'refusé' %}badge-danger{% endif %}
+                ">
+                    {{ rendezVous.etat.libelle|capitalize }}
+                </span>
+            </p>
+        </div>
+
+        {# ====== Détail des indications (lecture seule) ====== #}
+        <h2>Détail de la prescription</h2>
+        {% if indications is empty %}
+            <div class="alert alert-info">
+                Aucune indication n'a été prescrite pour ce rendez-vous.
+            </div>
+        {% else %}
+            <div class="card mb-4">
+                <table style="width:100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="text-align:left; border-bottom:1px solid var(--border-light);">
+                            <th>Médicament</th>
+                            <th>Quantité / prise</th>
+                            <th>Prises / jour</th>
+                            <th>Durée (jours)</th>
+                            <th>Posologie</th>
+                            {# Colonne actions affichée uniquement pour le médecin propriétaire #}
+                            {% if isOwnerMedecin %}<th>Actions</th>{% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ind in indications %}
+                            <tr style="border-bottom:1px solid var(--border-light);">
+                                <td>{{ ind.medicament.libelle }}</td>
+                                <td>{{ ind.quantite }}</td>
+                                <td>{{ ind.nbPriseParJour }}</td>
+                                <td>{{ ind.duree }}</td>
+                                {# Phrase reconstituée à la volée, lecture seule, pour faciliter
+                                   la lecture par le patient ou l'assistant. #}
+                                <td>
+                                    <em>
+                                        {{ ind.quantite }} × {{ ind.nbPriseParJour }} par jour
+                                        pendant {{ ind.duree }} jour{{ ind.duree > 1 ? 's' : '' }}
+                                    </em>
+                                </td>
+                                {# Boutons Modifier / Supprimer : médecin titulaire UNIQUEMENT #}
+                                {% if isOwnerMedecin %}
+                                    <td style="white-space: nowrap;">
+                                        <a href="{{ path('app_indication_edit', { id: ind.id }) }}"
+                                           class="btn btn-sm btn-warning">
+                                            Modifier
+                                        </a>
+
+                                        {# Suppression : POST + CSRF + confirmation JS pour éviter
+                                           les clics involontaires sur une prescription. #}
+                                        <form method="post"
+                                              action="{{ path('app_indication_delete', { id: ind.id }) }}"
+                                              style="display:inline-block;"
+                                              onsubmit="return confirm('Supprimer cette indication ?');">
+                                            <input type="hidden" name="_token"
+                                                   value="{{ csrf_token('delete_indication' ~ ind.id) }}">
+                                            <button type="submit" class="btn btn-sm btn-danger">
+                                                Supprimer
+                                            </button>
+                                        </form>
+                                    </td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+
+        {# ====== Bouton retour (pas de modification possible ici) ====== #}
+        <a href="{{ path('app_mes_rendez_vous') }}" class="btn btn-secondary">
+            ← Retour aux rendez-vous
+        </a>
+    </main>
+</div>
+{% endblock %}

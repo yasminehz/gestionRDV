@@ -100,12 +100,20 @@
                                             <input type="hidden" name="_token" value="{{ csrf_token('change_etat' ~ rdv.id) }}">
                                             <button class="btn btn-sm btn-danger" type="submit" {% if rdv.etat and rdv.etat.libelle == 'refusé' %}disabled{% endif %}>Refuser</button>
                                         </form>
+
+                                        {# Bouton "Voir prescription" pour l'assistant, toujours visible.
+                                           La page show affichera "Aucune indication" si rien n'a été prescrit. #}
+                                        <a href="{{ path('app_indication_show', { id: rdv.id }) }}"
+                                           class="btn btn-sm btn-info"
+                                           style="margin-left:6px;">
+                                            Voir prescription
+                                        </a>
                                     </td>
                                 {% else %}
                                     <td>{% if rdv.etat.libelle == 'demandé' %}
                                     <a href="{{ path('app_mes_rendez_vous_show', { id: rdv.id }) }}"
                                     class="btn btn-sm btn-primary">
-                                    
+
                                         Consulter (Modifier/Annuler)
                                     </a>
                                     {% elseif rdv.etat.libelle == 'confirmé' and role == 'medecin' %}
@@ -114,6 +122,22 @@
                                             Modifier
                                         </a>
                                     {% endif %}
+
+                                    {# Bouton Prescrire : visible uniquement pour le médecin,
+                                       et seulement sur des RDV "actifs" (pas annulés/refusés). #}
+                                    {% if role == 'medecin' and rdv.etat.libelle not in ['annulé', 'refusé'] %}
+                                        <a href="{{ path('app_indication_new', { id: rdv.id }) }}"
+                                           class="btn btn-sm btn-success">
+                                            Prescrire
+                                        </a>
+                                    {% endif %}
+
+                                    {# Bouton "Voir prescription" pour patient et médecin, toujours visible.
+                                       La page show affichera "Aucune indication" si rien n'a été prescrit. #}
+                                    <a href="{{ path('app_indication_show', { id: rdv.id }) }}"
+                                       class="btn btn-sm btn-info">
+                                        Voir prescription
+                                    </a>
                                     {#% if rdv.etat.libelle == 'demandé' %}
                                         <a href="{{ path('app_mes_rendez_vous_edit', { id: rdv.id }) }}"
                                         class="btn btn-sm btn-warning">

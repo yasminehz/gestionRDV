@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Patient;
 use App\Entity\Medecin;
+use App\Entity\Assistant;
 use App\Repository\EtatRepository;
 use App\Repository\RendezVousRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -29,12 +30,16 @@ final class MesRendezVousController extends AbstractController
     ): Response {
         $user = $this->getUser();
 
-        if (in_array('ROLE_PATIENT', $user->getRoles())) {
+        // Détermination du rôle courant pour adapter la requête et la vue.
+        // L'assistant est traité comme un médecin "délégué" : il voit les RDV du médecin auquel il est rattaché.
+        if ($user instanceof Assistant) {
+            $role = 'assistant';
+        } elseif (in_array('ROLE_PATIENT', $user->getRoles())) {
             $role = 'patient';
         } elseif (in_array('ROLE_MEDECIN', $user->getRoles())) {
             $role = 'medecin';
         } else {
-            throw $this->createAccessDeniedException('Vous devez être connecté en tant que patient ou médecin.');
+            throw $this->createAccessDeniedException('Vous devez être connecté en tant que patient, médecin ou assistant.');
         }
 
         // Met à jour automatiquement les RDV confirmés passés à "réalisé"
@@ -59,6 +64,11 @@ final class MesRendezVousController extends AbstractController
         // Récupération des RDV selon le rôle
         if ($role === 'patient') {
             $rendezVous = $rendezVousRepository->findByPatientAndEtat($user, $etatId);
+        } elseif ($role === 'assistant') {
+            // Assistant : on récupère les RDV du médecin auquel il est rattaché
+            $rendezVous = $rendezVousRepository->findByMedecinAndEtat(
+                $user->getMedecin(), $etatId, $aujourdhui, $dateSpecifique
+            );
         } else {
             $rendezVous = $rendezVousRepository->findByMedecinAndEtat($user, $etatId, $aujourdhui, $dateSpecifique);
         }

@@ -3,6 +3,8 @@
 namespace App\DataFixtures;
 
 use App\Entity\Assistant;
+use App\Entity\Indication;
+use App\Entity\Medicament;
 use App\Entity\RendezVous;
 use App\Entity\Medecin;
 use App\Entity\Patient;
@@ -96,85 +98,108 @@ class AppFixtures extends Fixture implements DependentFixtureInterface
 
         $manager->flush();
 
-        // Créer des rendez-vous après que les entités soient persistées
+        // ====================================================================
+        // RENDEZ-VOUS
+        // Les libellés d'état doivent matcher EXACTEMENT ceux d'EtatFixtures
+        // (avec accents : 'demandé', 'confirmé', 'annulé', 'refusé', 'réalisé')
+        // ====================================================================
         $rendezvousData = [
-            // Rendez-vous du patient 0 avec médecin 0
-            [
-                'patient_index' => 0,
-                'medecin_index' => 0,
-                'datetime' => (new \DateTime())->add(new \DateInterval('P1D')),
-                'etat' => 'demande',
-            ],
-            [
-                'patient_index' => 0,
-                'medecin_index' => 0,
-                'datetime' => (new \DateTime())->add(new \DateInterval('P3D')),
-                'etat' => 'confirme',
-            ],
-            // Rendez-vous du patient 1 avec médecin 0
-            [
-                'patient_index' => 1,
-                'medecin_index' => 0,
-                'datetime' => (new \DateTime())->add(new \DateInterval('P2D')),
-                'etat' => 'demande',
-            ],
-            // Rendez-vous du patient 2 avec médecin 1
-            [
-                'patient_index' => 2,
-                'medecin_index' => 1,
-                'datetime' => (new \DateTime())->add(new \DateInterval('P5D')),
-                'etat' => 'confirme',
-            ],
-            [
-                'patient_index' => 2,
-                'medecin_index' => 1,
-                'datetime' => (new \DateTime())->add(new \DateInterval('P7D')),
-                'etat' => 'realise',
-            ],
-            // Rendez-vous du patient 3 avec médecin 2
-            [
-                'patient_index' => 3,
-                'medecin_index' => 2,
-                'datetime' => (new \DateTime())->add(new \DateInterval('P4D')),
-                'etat' => 'refuse',
-            ],
-            // Rendez-vous du patient 4 avec médecin 0
-            [
-                'patient_index' => 4,
-                'medecin_index' => 0,
-                'datetime' => (new \DateTime())->add(new \DateInterval('P6D')),
-                'etat' => 'confirme',
-            ],
-            // Rendez-vous du patient 5 avec médecin 1
-            [
-                'patient_index' => 5,
-                'medecin_index' => 1,
-                'datetime' => (new \DateTime())->add(new \DateInterval('P2D')),
-                'etat' => 'demande',
-            ],
-            [
-                'patient_index' => 5,
-                'medecin_index' => 1,
-                'datetime' => (new \DateTime())->add(new \DateInterval('P8D')),
-                'etat' => 'annule',
-            ],
+            // RDV 0 : Jean ↔ Dr Wartel (médecin 0) - demande à venir
+            ['patient_index' => 0, 'medecin_index' => 0, 'datetime' => (new \DateTime())->add(new \DateInterval('P1D')),  'etat' => 'demandé'],
+            // RDV 1 : Jean ↔ Dr Wartel - confirmé (futur, recevra des prescriptions)
+            ['patient_index' => 0, 'medecin_index' => 0, 'datetime' => (new \DateTime())->add(new \DateInterval('P3D')),  'etat' => 'confirmé'],
+            // RDV 2 : Marie ↔ Dr Wartel - demandé
+            ['patient_index' => 1, 'medecin_index' => 0, 'datetime' => (new \DateTime())->add(new \DateInterval('P2D')),  'etat' => 'demandé'],
+            // RDV 3 : Marc ↔ Dr Zitoun - confirmé (recevra prescription)
+            ['patient_index' => 2, 'medecin_index' => 1, 'datetime' => (new \DateTime())->add(new \DateInterval('P5D')),  'etat' => 'confirmé'],
+            // RDV 4 : Marc ↔ Dr Zitoun - réalisé (a déjà reçu prescription)
+            ['patient_index' => 2, 'medecin_index' => 1, 'datetime' => (new \DateTime())->sub(new \DateInterval('P7D')),  'etat' => 'réalisé'],
+            // RDV 5 : Anne ↔ Dr Henni - refusé
+            ['patient_index' => 3, 'medecin_index' => 2, 'datetime' => (new \DateTime())->add(new \DateInterval('P4D')),  'etat' => 'refusé'],
+            // RDV 6 : Paul ↔ Dr Wartel - confirmé (recevra prescription)
+            ['patient_index' => 4, 'medecin_index' => 0, 'datetime' => (new \DateTime())->add(new \DateInterval('P6D')),  'etat' => 'confirmé'],
+            // RDV 7 : Claire ↔ Dr Zitoun - demandé
+            ['patient_index' => 5, 'medecin_index' => 1, 'datetime' => (new \DateTime())->add(new \DateInterval('P2D')),  'etat' => 'demandé'],
+            // RDV 8 : Claire ↔ Dr Zitoun - annulé
+            ['patient_index' => 5, 'medecin_index' => 1, 'datetime' => (new \DateTime())->add(new \DateInterval('P8D')),  'etat' => 'annulé'],
+            // RDV 9 : Anne ↔ Dr Henni - réalisé (recevra prescription pour donner du contenu au Dr Henni)
+            ['patient_index' => 3, 'medecin_index' => 2, 'datetime' => (new \DateTime())->sub(new \DateInterval('P3D')),  'etat' => 'réalisé'],
         ];
 
+        // On garde les RDV créés dans un tableau pour pouvoir y rattacher les indications plus bas
+        $rendezVous = [];
         foreach ($rendezvousData as $data) {
             $rv = new RendezVous();
             $rv->setPatient($patients[$data['patient_index']]);
             $rv->setMedecin($medecins[$data['medecin_index']]);
-            
+
             $start = $data['datetime'];
             $end = (clone $start)->add(new \DateInterval('PT30M'));
             $rv->setDebut($start);
             $rv->setFin($end);
-            
-            // Récupérer l'entité Etat via le repository
+
             $etat = $this->etatRepository->findOneBy(['libelle' => $data['etat']]);
             $rv->setEtat($etat);
 
             $manager->persist($rv);
+            $rendezVous[] = $rv;
+        }
+
+        // ====================================================================
+        // MÉDICAMENTS (5)
+        // ====================================================================
+        $medicaments = [];
+        $medicamentLibelles = [
+            'Doliprane 1000mg',
+            'Ibuprofène 400mg',
+            'Amoxicilline 500mg',
+            'Spasfon',
+            'Smecta',
+        ];
+        foreach ($medicamentLibelles as $libelle) {
+            $m = new Medicament();
+            $m->setLibelle($libelle);
+            $manager->persist($m);
+            $medicaments[] = $m;
+        }
+
+        // ====================================================================
+        // INDICATIONS (prescriptions)
+        // Plusieurs prescriptions par médecin et par patient, avec recouvrement
+        // sur les médicaments pour tester la recherche "patients par médicament".
+        //
+        // Format : [rdv_index, medicament_index, quantite, nbPriseParJour, duree(jours)]
+        // ====================================================================
+        $indicationData = [
+            // RDV 1 : Jean (Wartel) - Doliprane + Ibuprofène
+            [1, 0, 1, 3, 5],   // Doliprane 1×3/j pendant 5j
+            [1, 1, 1, 2, 3],   // Ibuprofène 1×2/j pendant 3j
+
+            // RDV 3 : Marc (Zitoun) - Amoxicilline (antibio)
+            [3, 2, 1, 3, 7],   // Amoxicilline 1×3/j pendant 7j
+
+            // RDV 4 : Marc (Zitoun) - Doliprane + Spasfon (consultation déjà réalisée)
+            [4, 0, 2, 3, 5],   // Doliprane 2×3/j pendant 5j
+            [4, 3, 1, 3, 5],   // Spasfon 1×3/j pendant 5j
+
+            // RDV 6 : Paul (Wartel) - Doliprane + Smecta + Ibuprofène
+            [6, 0, 1, 4, 7],   // Doliprane 1×4/j pendant 7j
+            [6, 4, 1, 3, 5],   // Smecta 1×3/j pendant 5j
+            [6, 1, 1, 2, 4],   // Ibuprofène 1×2/j pendant 4j
+
+            // RDV 9 : Anne (Henni) - Spasfon + Doliprane
+            [9, 3, 2, 2, 4],   // Spasfon 2×2/j pendant 4j
+            [9, 0, 1, 3, 3],   // Doliprane 1×3/j pendant 3j
+        ];
+
+        foreach ($indicationData as [$rdvIdx, $medIdx, $qte, $nbPrise, $duree]) {
+            $ind = new Indication();
+            $ind->setRendezVous($rendezVous[$rdvIdx]);
+            $ind->setMedicament($medicaments[$medIdx]);
+            $ind->setQuantite($qte);
+            $ind->setNbPriseParJour($nbPrise);
+            $ind->setDuree($duree);
+            $manager->persist($ind);
         }
 
         $manager->flush();
